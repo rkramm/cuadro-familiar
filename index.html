@@ -1492,12 +1492,15 @@ function ymd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
 var GAS=(typeof google!=='undefined'&&google.script&&google.script.run)?google.script.run:null;
 /* Conexión con Apps Script cuando el panel está en GitHub Pages: ?api=URL&k=CLAVE (se guarda en este iPad) */
 /* Dirección de Apps Script de la familia (no es secreta: sin la clave no entrega datos) */
-var DEFAULT_API='https://script.google.com/macros/s/AKfycbwu-3K6qz2XTA3LjcWY2yli-C-4UDt_wteP4liQNepkkHkTySOfn9NvBMop2XhAxL0-XQ/exec';
+var DEFAULT_API='https://script.google.com/macros/s/AKfycbwO_SKz7lasHvHMKQEidpJfl1uGdK8ZY-hLhhXSk4VhlPcEwIclzfIPzj5T-fFaJeMfrw/exec';
 var API=(function(){
   var a=lsGet('cmf_api',null),q=location.search||'',mu=/[?&]api=([^&]+)/.exec(q),mk=/[?&]k=([^&]+)/.exec(q);
   /* enlace de un toque: …/?k=CLAVE (o …/?api=URL&k=CLAVE) */
   if(mk){a={url:mu?decodeURIComponent(mu[1]):(DEFAULT_API||a&&a.url),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);lsSet('cmf_apimode','xhr');try{history.replaceState(null,'',location.pathname);}catch(e){}}
   if(a&&!a.url&&DEFAULT_API)a.url=DEFAULT_API;
+  /* direcciones antiguas de este panel: se reemplazan solas por la actual */
+  var OLD_API=['AKfycbzKglARg9P4l5SFJg_og-Xy2TlP_OqeIeZtIs2mGjPaCAPJz-SAU1S-SuatLcVSlwWbpA','AKfycbwu-3K6qz2XTA3LjcWY2yli-C-4UDt_wteP4liQNepkkHkTySOfn9NvBMop2XhAxL0-XQ','AKfycbxunJ0Zo9CBM3uoE7J-dRSHdSxwrgwz4pLbtNJGy6YpFto7mCTBLT'];
+  if(a&&a.url&&DEFAULT_API&&a.url!==DEFAULT_API){for(var oi2=0;oi2<OLD_API.length;oi2++)if(a.url.indexOf(OLD_API[oi2])>=0){a.url=DEFAULT_API;lsSet('cmf_api',a);lsSet('cmf_apimode','xhr');break;}}
   return a&&a.url&&a.k?a:null;
 })();
 /* Conexión con Apps Script: primero POST normal; si Safari bloquea la respuesta,
