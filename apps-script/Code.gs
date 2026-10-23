@@ -23,6 +23,7 @@ var CONFIG = {
 /* ===================== WEB ===================== */
 function doGet(e) {
   if (e && e.parameter && e.parameter.code) return stCallback_(e.parameter.code);
+  if (e && e.parameter && e.parameter.fn) return jsonp_(e.parameter);
   if (CONFIG.KEY && (!e || !e.parameter || e.parameter.k !== CONFIG.KEY)) return HtmlService.createHtmlOutput('<p style="font-family:sans-serif">Acceso no autorizado.</p>');
   return HtmlService.createHtmlOutputFromFile('Index')
     .setTitle('Cuadro de mando familiar')
@@ -53,17 +54,41 @@ function apiFns_() {
     listPhotos: listPhotos, getPhoto: getPhoto, savePhoto: savePhoto, importFromImage: importFromImage, suggestIngredients: suggestIngredients, setGeminiKey: setGeminiKey, ping: ping };
 }
 function ping() { return { ok: true, calendar: CONFIG.CALENDAR_NAME, time: new Date().toISOString() }; }
+function dispatch_(req) {
+  if (!CONFIG.KEY) throw new Error('Falta definir KEY en Code.gs');
+  if (req.k !== CONFIG.KEY) throw new Error('Clave incorrecta');
+  var f = apiFns_()[req.fn];
+  if (typeof f !== 'function') throw new Error('Función no permitida');
+  return f.apply(null, req.args || []);
+}
+function run_(req) {
+  try { return { ok: true, result: dispatch_(req) }; }
+  catch (err) { return { ok: false, error: String(err && err.message || err) }; }
+}
+/* Vía 1: POST con JSON. Si el navegador no puede leer la respuesta (Safari a veces la bloquea),
+   el resultado queda guardado unos minutos con el identificador «rid» para pedirlo por la vía 2. */
 function doPost(e) {
-  var out;
-  try {
-    var req = JSON.parse(e && e.postData && e.postData.contents || '{}');
-    if (!CONFIG.KEY) throw new Error('Falta definir KEY en Code.gs');
-    if (req.k !== CONFIG.KEY) throw new Error('Clave incorrecta');
-    var f = apiFns_()[req.fn];
-    if (typeof f !== 'function') throw new Error('Función no permitida');
-    out = { ok: true, result: f.apply(null, req.args || []) };
-  } catch (err) { out = { ok: false, error: String(err && err.message || err) }; }
+  var req = {};
+  try { req = JSON.parse(e && e.postData && e.postData.contents || '{}'); } catch (err) {}
+  var out = run_(req);
+  if (req.rid && /^[\w-]{6,40}$/.test(req.rid) && req.k === CONFIG.KEY) {
+    var s = JSON.stringify(out);
+    try { CacheService.getScriptCache().put('r_' + req.rid, s.length < 95000 ? s : JSON.stringify({ ok: true, result: null, big: true }), 600); } catch (err) {}
+  }
   return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+/* Vía 2: GET con respuesta en JavaScript (JSONP). Funciona en cualquier navegador, incluso iOS antiguos. */
+function jsonp_(p) {
+  var cb = /^[A-Za-z_$][\w$]{0,60}$/.test(p.cb || '') ? p.cb : 'callback', out;
+  if (p.fn === 'result') {
+    if (p.k !== CONFIG.KEY) out = { ok: false, error: 'Clave incorrecta' };
+    else { var s = CacheService.getScriptCache().get('r_' + p.rid); out = s ? JSON.parse(s) : { pending: true }; }
+  } else {
+    var args = [];
+    try { args = JSON.parse(p.a || '[]'); } catch (err) {}
+    out = run_({ k: p.k, fn: p.fn, args: args });
+  }
+  return ContentService.createTextOutput(cb + '(' + JSON.stringify(out) + ');').setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
 /* ===================== CALENDARIO ===================== */

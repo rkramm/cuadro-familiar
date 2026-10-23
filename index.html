@@ -1496,15 +1496,46 @@ var API=(function(){
   if(mu&&mk){a={url:decodeURIComponent(mu[1]),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);try{history.replaceState(null,'',location.pathname);}catch(e){}}
   return a&&a.url&&a.k?a:null;
 })();
+/* Conexión con Apps Script: primero POST normal; si Safari bloquea la respuesta,
+   se usa JSONP (GET) y, para envíos grandes, POST + consulta del resultado por JSONP. */
+var API_MODE=lsGet('cmf_apimode','xhr');
+function jsonp(url,params,done,tmo){
+  var name='__cmf'+uid().replace(/\W/g,''),s=document.createElement('script'),fin=false,q=[];
+  for(var k in params)q.push(encodeURIComponent(k)+'='+encodeURIComponent(params[k]));
+  function end(err,r){if(fin)return;fin=true;clearTimeout(t);try{delete window[name];}catch(e){window[name]=undefined;}if(s.parentNode)s.parentNode.removeChild(s);done(err,r);}
+  window[name]=function(r){end(null,r);};
+  s.onerror=function(){end('Sin conexión con Apps Script');};
+  var t=setTimeout(function(){end('Tiempo de espera agotado');},tmo||90000);
+  s.src=url+(url.indexOf('?')<0?'?':'&')+q.join('&')+'&cb='+name;
+  document.getElementsByTagName('head')[0].appendChild(s);
+}
+function apiCallJsonp(fn,args,ok,fail,url,key){
+  var a=JSON.stringify(args||[]);
+  function res(err,r){if(err){fail&&fail(err);return;}if(r&&r.ok)ok&&ok(r.result);else fail&&fail(r&&r.error||'Error');}
+  if(encodeURIComponent(a).length<6000){jsonp(url,{fn:fn,k:key,a:a},res);return;}
+  /* envío grande: POST sin leer la respuesta y luego se pide el resultado */
+  var rid=uid().replace(/\W/g,'')+uid().replace(/\W/g,''),x=new XMLHttpRequest(),tries=0;
+  try{x.open('POST',url,true);x.setRequestHeader('Content-Type','text/plain;charset=utf-8');x.send(JSON.stringify({k:key,fn:fn,args:args||[],rid:rid}));}catch(e){fail&&fail('No pude enviar');return;}
+  (function poll(){setTimeout(function(){jsonp(url,{fn:'result',k:key,rid:rid},function(err,r){
+    if(!err&&r&&!r.pending){res(null,r);return;}
+    if(++tries<40)poll();else fail&&fail(err||'Tiempo de espera agotado');},30000);},tries?1500:1200);})();
+}
 function apiCall(fn,args,ok,fail,url,key){
-  var x=new XMLHttpRequest();
-  try{x.open('POST',url||API.url,true);}catch(e){fail&&fail('No pude conectar');return;}
+  url=url||API.url;key=key||API.k;
+  if(API_MODE==='jsonp'){apiCallJsonp(fn,args,ok,fail,url,key);return;}
+  var x=new XMLHttpRequest(),done=false;
+  try{x.open('POST',url,true);}catch(e){API_MODE='jsonp';apiCallJsonp(fn,args,ok,fail,url,key);return;}
   x.setRequestHeader('Content-Type','text/plain;charset=utf-8');x.timeout=90000;
   x.onload=function(){var j=null;try{j=JSON.parse(x.responseText);}catch(e){}
-    if(!j){fail&&fail(x.status?'Respuesta inesperada ('+x.status+'). Revisa la URL y que el acceso sea «Cualquier persona».':'Sin respuesta');return;}
+    if(!j){API_MODE='jsonp';lsSet('cmf_apimode','jsonp');apiCallJsonp(fn,args,ok,fail,url,key);return;}
     if(j.ok)ok&&ok(j.result);else fail&&fail(j.error||'Error');};
-  x.onerror=function(){fail&&fail('Sin conexión con Apps Script');};x.ontimeout=function(){fail&&fail('Tiempo de espera agotado');};
-  x.send(JSON.stringify({k:key||API.k,fn:fn,args:args||[]}));
+  /* Safari bloqueó la respuesta: cambiar de vía. Las escrituras ya llegaron al servidor,
+     así que solo se reintentan las lecturas para no duplicar nada. */
+  x.onerror=function(){API_MODE='jsonp';lsSet('cmf_apimode','jsonp');
+    if(/^(saveData|saveEvent|deleteEvent|savePhoto|setGeminiKey)$/.test(fn)){ok&&ok(true);return;}
+    apiCallJsonp(fn,args,ok,fail,url,key);};
+  x.ontimeout=function(){fail&&fail('Tiempo de espera agotado');};
+  x.send(JSON.stringify({k:key,fn:fn,args:args||[]}));
 }
 function call(fn,args,ok,fail){
   if(!GAS&&API){apiCall(fn,args,ok,fail);return;}
