@@ -1446,6 +1446,13 @@ html.dev-phone .lemv,html.compact .lemv{-webkit-flex-direction:row;flex-directio
 html.dev-phone .lemv button,html.compact .lemv button{width:38px;height:34px;border-radius:10px!important;margin:0 0 0 4px!important;font-size:12px}
 html.dev-phone .ledel,html.compact .ledel{margin-top:6px}
 html.dev-phone .pop.leed,html.compact .pop.leed{padding-left:16px;padding-right:16px}
+.sv-phr{margin-top:10px;font-size:22px;font-style:italic;font-weight:400;opacity:.9;line-height:1.3;text-shadow:0 1px 8px rgba(0,0,0,.25)}
+.sv-phr span{display:inline-block;-webkit-animation:svph 1.2s ease;animation:svph 1.2s ease}
+@-webkit-keyframes svph{from{opacity:0;-webkit-transform:translateY(8px)}to{opacity:1;-webkit-transform:none}}
+@keyframes svph{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.saver.nightmode .sv-phr{font-size:22px;opacity:.55;color:#FFD9A8;margin-top:14px}
+html.compact .sv-phr{font-size:17px;margin-top:6px}
+html.compact.short .sv-phr{display:none}
 </style>
 
 
@@ -1532,7 +1539,7 @@ html.dev-phone .pop.leed,html.compact .pop.leed{padding-left:16px;padding-right:
 <div class="confetti" id="confetti" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="saver" id="saver" hidden><div class="sv-sky" id="svSky"><div class="wanim" id="svAnim"></div></div><div class="sv-sheen s1"></div><div class="sv-sheen s2"></div><div class="sv-sheen s3"></div><div class="sv-veil"></div>
-  <div class="sv-body" id="svBody"><div class="sv-top"><div class="sv-clock"><div class="sv-time num" id="svTime"></div><div class="sv-date" id="svDate"></div><div class="sv-nt" id="svNightT"></div></div><div class="glass sv-today" id="svToday"></div></div>
+  <div class="sv-body" id="svBody"><div class="sv-top"><div class="sv-clock"><div class="sv-time num" id="svTime"></div><div class="sv-date" id="svDate"></div><div class="sv-nt" id="svNightT"></div><div class="sv-phr" id="svPhr"></div></div><div class="glass sv-today" id="svToday"></div></div>
   <div class="sv-stage" id="svStage"></div>
   <div class="sv-foot"><div class="sv-dots" id="svDots"></div><div class="sv-hint">Toca para volver · desliza para cambiar</div></div></div></div>
 <button class="demo" id="demo" data-go="settings" hidden></button>
@@ -2882,13 +2889,14 @@ function phrases(){var p=D.settings&&D.settings.phrases;return p&&p.length?p:DEF
 function soundOn(){return !(D.settings&&D.settings.sound===false);}
 function renderGreet(){
   var el=$('greet');if(!el)return;var n=new Date(),hr=n.getHours(),g=hr<5?'Buenas noches':hr<13?'Buenos días':hr<20?'Buenas tardes':'Buenas noches';
-  var p=phrases(),ix=(Math.floor(n.getTime()/1800000)+n.getDate())%p.length,w=wxDay(n),tip='';
+  var p=phrases(),ix=Math.floor(n.getTime()/120000)%p.length,w=wxDay(n),tip='';
   if(w&&(w.p||0)>=50&&hr<20)tip=' <span class="gtip">'+li('umbrella')+'Hoy lleva paraguas</span>';
   else if(w&&w.mx<=9&&hr<14)tip=' <span class="gtip">🧣 Abrígate bien</span>';
   var x='<b>'+g+', '+h(child())+'</b>'+tip+'<span class="gph">'+h(p[ix])+'</span>';
   if(el._x!==x){el._x=x;el.innerHTML=x;}
+  var sp=$('svPhr');if(sp&&sp._t!==p[ix]){sp._t=p[ix];sp.innerHTML='<span>'+h(p[ix])+'</span>';}
 }
-setInterval(renderGreet,60000);
+setInterval(renderGreet,15000);
 
 /* ================= CELEBRACIÓN: ESTRELLA QUE VUELA + SONIDO ================= */
 function bump(el){if(!el)return;el.className=el.className.replace(/\s?bump/g,'');void el.offsetWidth;el.className+=' bump';setTimeout(function(){el.className=el.className.replace(/\s?bump/g,'');},700);}
