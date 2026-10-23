@@ -200,6 +200,64 @@ function suggestIngredients(dish) {
   return j.ingredients || [];
 }
 
+/* ===================== FOTOS (Google Drive) =====================
+ * Carpeta en tu Drive: «Cuadro de mando · Fotos». Ahí se guarda la foto del día. */
+var PHOTO_FOLDER = 'Cuadro de mando · Fotos';
+function photoFolder_() {
+  var id = PropertiesService.getScriptProperties().getProperty('photo_folder');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (err) {} }
+  var it = DriveApp.getFoldersByName(PHOTO_FOLDER), f = it.hasNext() ? it.next() : DriveApp.createFolder(PHOTO_FOLDER);
+  PropertiesService.getScriptProperties().setProperty('photo_folder', f.getId());
+  return f;
+}
+function landFolder_() {
+  var main = photoFolder_(), it = main.getFoldersByName('Paisajes');
+  return it.hasNext() ? it.next() : main.createFolder('Paisajes');
+}
+function listPhotos() {
+  var cache = CacheService.getScriptCache(), hit = cache.get('plist2');
+  if (hit) return JSON.parse(hit);
+  var out = [], tz = 'America/Santiago';
+  [[photoFolder_(), false], [landFolder_(), true]].forEach(function (pair) {
+    var files = pair[0].getFiles();
+    while (files.hasNext() && out.length < 800) {
+      var f = files.next();
+      if (String(f.getMimeType()).indexOf('image/') !== 0) continue;
+      var m = /(\d{4}-\d{2}-\d{2})/.exec(f.getName());
+      out.push({ id: f.getId(), day: m ? m[1] : Utilities.formatDate(f.getDateCreated(), tz, 'yyyy-MM-dd'), daily: f.getName().indexOf('Foto del día') === 0, land: pair[1] });
+    }
+  });
+  out.sort(function (a, b) { return a.day < b.day ? 1 : a.day > b.day ? -1 : 0; });
+  cache.put('plist2', JSON.stringify(out), 300);
+  return out;
+}
+/** Devuelve la foto reducida (lado mayor = size px) como data URL. Solo fotos de la carpeta del panel. */
+function getPhoto(id, size) {
+  var allowed = [photoFolder_().getId(), landFolder_().getId()], file = DriveApp.getFileById(id), ok = false, ps = file.getParents();
+  while (ps.hasNext()) if (allowed.indexOf(ps.next().getId()) >= 0) ok = true;
+  if (!ok) throw new Error('Foto no permitida');
+  var tok = ScriptApp.getOAuthToken(), blob = null;
+  try {
+    var meta = JSON.parse(UrlFetchApp.fetch('https://www.googleapis.com/drive/v3/files/' + encodeURIComponent(id) + '?fields=thumbnailLink', { headers: { Authorization: 'Bearer ' + tok }, muteHttpExceptions: true }).getContentText());
+    if (meta.thumbnailLink) {
+      var r = UrlFetchApp.fetch(meta.thumbnailLink.replace(/=s\d+$/, '=s' + (size || 1600)), { headers: { Authorization: 'Bearer ' + tok }, muteHttpExceptions: true });
+      if (r.getResponseCode() === 200) blob = r.getBlob();
+    }
+  } catch (err) {}
+  if (!blob) { if (file.getSize() > 3000000) throw new Error('Foto aún sin miniatura; reintenta en un minuto'); blob = file.getBlob(); }
+  return 'data:' + (blob.getContentType() || 'image/jpeg') + ';base64,' + Utilities.base64Encode(blob.getBytes());
+}
+/** Guarda la foto del día (JPEG ya reducida en el dispositivo). Si se repite, reemplaza la del mismo día. */
+function savePhoto(dataUrl, day) {
+  var m = /^data:(image\/[a-z]+);base64,(.+)$/.exec(String(dataUrl));
+  if (!m || !/^\d{4}-\d{2}-\d{2}$/.test(day)) throw new Error('Foto inválida');
+  var f = photoFolder_(), name = 'Foto del día ' + day + '.jpg', old = f.getFilesByName(name);
+  while (old.hasNext()) old.next().setTrashed(true);
+  var file = f.createFile(Utilities.newBlob(Utilities.base64Decode(m[2]), m[1], name));
+  CacheService.getScriptCache().remove('plist2');
+  return file.getId();
+}
+
 /* ===================== CLIMA ===================== */
 function getWeather() {
   var cache = CacheService.getScriptCache(), hit = cache.get('wx3');
