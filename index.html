@@ -1555,6 +1555,78 @@ html.compact .hero .nowx .t{font-size:28px}
 .week.cols5 .dwx,.week.cols6 .dwx,.week.cols7 .dwx,.week.cols8 .dwx,#cw1 .dwx,#cw2 .dwx{font-size:12.5px!important}
 .week.cols5 .dwx .pp .li,.week.cols6 .dwx .pp .li,.week.cols7 .dwx .pp .li,.week.cols8 .dwx .pp .li,#cw1 .dwx .pp .li,#cw2 .dwx .pp .li{display:none}
 .week.cols6 .dwx>svg,.week.cols7 .dwx>svg,.week.cols8 .dwx>svg,#cw1 .dwx>svg,#cw2 .dwx>svg{width:21px!important;height:19px!important;margin-right:2px!important}
+
+/* ===== Inicio: reloj con el mismo fondo y detalles que «Tiempo» ===== */
+.hero{position:relative;overflow:hidden;color:#fff!important;border:0!important;background:-webkit-linear-gradient(315deg,#46536F,#7D8BA8)!important;background:linear-gradient(135deg,#46536F,#7D8BA8)!important;--wxbg:rgba(0,0,0,0)}
+.hero.k-sun{background:-webkit-linear-gradient(315deg,#2F74D6,#63B0F2)!important;background:linear-gradient(135deg,#2F74D6,#63B0F2)!important}
+.hero.k-part{background:-webkit-linear-gradient(315deg,#3561B3,#6E9BD9)!important;background:linear-gradient(135deg,#3561B3,#6E9BD9)!important}
+.hero.k-cloud{background:-webkit-linear-gradient(315deg,#46536F,#7D8BA8)!important;background:linear-gradient(135deg,#46536F,#7D8BA8)!important}
+.hero.k-fog{background:-webkit-linear-gradient(315deg,#5D6676,#959DAA)!important;background:linear-gradient(135deg,#5D6676,#959DAA)!important}
+.hero.k-rain{background:-webkit-linear-gradient(315deg,#25314B,#4D5C7E)!important;background:linear-gradient(135deg,#25314B,#4D5C7E)!important}
+.hero.k-storm{background:-webkit-linear-gradient(315deg,#171A2C,#3A3F62)!important;background:linear-gradient(135deg,#171A2C,#3A3F62)!important}
+.hero.k-snow{background:-webkit-linear-gradient(315deg,#62799F,#A9BCD8)!important;background:linear-gradient(135deg,#62799F,#A9BCD8)!important}
+.hero.night{background:-webkit-linear-gradient(315deg,#0E1433,#2A2F6A)!important;background:linear-gradient(135deg,#0E1433,#2A2F6A)!important}
+.hero>.wanim{position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.hero>.clockbox,.hero>.wxtap{position:relative;z-index:1}
+html:not(.fx-full) .hero>.wanim *{-webkit-animation-play-state:paused!important;animation-play-state:paused!important}
+.hero .bigdate,.hero .bigdate b,.hero .greet b{color:#fff}
+.hero .greet .gph{color:rgba(255,255,255,.82)}
+.hero .greet .gtip{background:rgba(255,255,255,.18);color:#fff}
+.hero .clockbox{-webkit-flex:0 0 auto;flex:0 0 auto;max-width:40%}
+.hero .bigtime{font-size:72px}
+.hero .wxtap{-webkit-flex:1;flex:1;min-width:0;margin-left:14px}
+.hero .nowx{display:-webkit-flex!important;display:flex!important;-webkit-flex-direction:row!important;flex-direction:row!important;-webkit-align-items:center!important;align-items:center!important;width:100%;min-width:0;background:transparent!important;padding:0!important;margin:0!important;text-align:left}
+.hero .hmain{-webkit-flex:0 0 118px;flex:0 0 118px;margin-right:8px}
+.hero .hmain .wico svg{width:40px!important;height:40px!important}
+.hero .hmain .t{font-size:38px;font-weight:300;letter-spacing:-1.5px;line-height:1;color:#fff}
+.hero .hmain .cond{font-size:15px;font-weight:600;margin-top:2px}
+.hero .hmain .s{font-size:12px;color:rgba(255,255,255,.8);margin-top:1px;white-space:nowrap}
+.hero .wgrid{margin:-3px}
+.hero .wt{width:calc(33.33% - 6px);margin:3px;padding:5px 8px;background:rgba(255,255,255,.14)}
+.hero .wt .k{font-size:11px}.hero .wt .v{font-size:15px}.hero .wt .s2{font-size:10.5px}
+.hero .wt .v .li,.hero .wt .v svg{width:15px;height:15px}
+.hero .wt .arrow{width:11px;height:11px}
+.portrait .hero .clockbox{max-width:44%}
+.portrait .hero .bigtime{font-size:80px}
+html.compact .hero{-webkit-flex-wrap:wrap!important;flex-wrap:wrap!important}
+html.compact .hero .clockbox{max-width:none;width:100%;-webkit-flex:0 0 100%;flex:0 0 100%}
+html.compact .hero .wxtap{margin:10px 0 0;width:100%;-webkit-flex:0 0 100%;flex:0 0 100%}
+html.compact .hero .hmain{-webkit-flex:0 0 104px;flex:0 0 104px}
+html.compact .hero .wt{padding:5px 6px}
+html.compact.short .hero .wxtap{-webkit-flex:1;flex:1;margin:0 0 0 12px;width:auto}
+html.compact.short .hero .clockbox{width:auto;-webkit-flex:0 0 auto;flex:0 0 auto}
+
+/* ===== Inicio: días completos en español e inglés ===== */
+#week .dh .n{display:block;line-height:1.1;min-width:0;overflow:hidden}
+#week .dh .n small{display:block;font-size:11px;font-weight:500;color:var(--muted);margin-top:1px;letter-spacing:.2px}
+#week .dh{-webkit-align-items:flex-start;align-items:flex-start}
+#week.cols6 .dh .n,#week.cols7 .dh .n,#week.cols8 .dh .n{font-size:14px}
+#week.cols6 .dh .d,#week.cols7 .dh .d,#week.cols8 .dh .d{font-size:20px}
+#week.cols6 .dh .plus,#week.cols7 .dh .plus,#week.cols8 .dh .plus{display:none}
+.dwx{cursor:pointer}
+/* mosaicos de 2 columnas: etiqueta y valor en una fila, detalle debajo */
+.hero .wt{width:calc(50% - 6px);padding:4px 9px;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;-webkit-align-items:baseline;align-items:baseline}
+.hero .wt .k{-webkit-flex:1;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hero .wt .v{margin-left:6px;font-size:15px}
+.hero .wt .s2{width:100%}
+.hero .bigtime{font-size:66px}
+.hero .hmain{-webkit-flex:0 0 108px;flex:0 0 108px}
+.hero .hmain .t{font-size:34px}
+.portrait .hero .wt,html.compact .hero .wt{width:calc(33.33% - 6px)}
+#week.cols7 .dh .n,#week.cols8 .dh .n{font-size:13px}
+#week.cols7 .dh .d,#week.cols8 .dh .d{font-size:18px}
+#week.cols7 .dh .n small,#week.cols8 .dh .n small{font-size:10px}
+.hero .wt .k{-webkit-flex:none;flex:none;overflow:visible}
+.hero .wt .v{-webkit-flex:1;flex:1;min-width:0;text-align:right;font-size:14px}
+.hero{-webkit-flex:3.1!important;flex:3.1!important}
+.portrait .hero{-webkit-flex:0 0 190px!important;flex:0 0 190px!important}
+.hero .nowx{-webkit-flex:1 1 auto!important;flex:1 1 auto!important;width:auto!important;min-width:0!important}
+.hero .wgrid{-webkit-flex:1 1 0;flex:1 1 0;min-width:0}
+.hero .wxtap{display:-webkit-flex;display:flex}
+html.compact .hero .wt{width:calc(50% - 6px)}
+.portrait .hero .wt{width:calc(50% - 6px)}
+.portrait .hero .bigtime{font-size:68px}
+.portrait .hero .clockbox{max-width:36%}
 </style>
 
 
@@ -1580,13 +1652,13 @@ html.compact .hero .nowx .t{font-size:28px}
     <section class="screen on" id="s-home">
       <div class="home">
         <div class="r1">
-          <div class="hero">
+          <div class="hero" id="hero"><div class="wanim" id="hAnim" aria-hidden="true"></div>
             <div class="clockbox">
               <div class="bigtime num" aria-live="off"><span class="dg" id="h0"></span><span class="dg" id="h1"></span><span class="colon">:</span><span class="dg" id="m0"></span><span class="dg" id="m1"></span></div>
               <div class="bigdate"><span class="ln on" id="bdes"></span><span class="ln" id="bden"></span></div>
               <div class="greet" id="greet"></div>
             </div>
-            <div class="wxtap" data-go="wx" aria-label="Ver tiempo extendido"><div class="nowx" id="nowx"></div><div class="fc" id="fc"></div></div>
+            <div class="wxtap" data-wxgo="" aria-label="Ver tiempo extendido"><div class="nowx" id="nowx"></div><div class="fc" id="fc"></div></div>
           </div>
           <div class="nextc" id="next"></div>
         </div>
@@ -1989,8 +2061,14 @@ function li(n,c){return '<i class="li'+(c?' '+c:'')+'">'+LI[n]+'</i>';}
 function renderHero(){
   setAppSky();
   var now=new Date(),c=S.wx&&S.wx.current,td=wxDay(now),x='';
-  if(c){x='<span class="wico k-'+wxKind(c.weather_code)+'">'+wxIcon(c.weather_code,c.is_day===0)+'</span><div class="t num">'+Math.round(c.temperature_2m)+'°</div>';
-    if(td)x+='<div class="s num">'+Math.round(td.mn)+'° / '+Math.round(td.mx)+'°</div><div class="s">'+li('drop')+(td.p||0)+' %</div>';}
+  if(c){var kd=wxKind(c.weather_code),nt=c.is_day===0,rise=td&&td.rise?td.rise.slice(11,16):'–',set=td&&td.set?td.set.slice(11,16):'–';
+    x='<div class="hmain"><span class="wico">'+wxIcon(c.weather_code,nt)+'</span><div class="t num">'+fmt(c.temperature_2m,1)+'°</div><div class="cond">'+wxText(c.weather_code)+'</div>'+
+      '<div class="s num">Sensación '+Math.round(c.apparent_temperature)+'°</div>'+(td?'<div class="s num">Máx '+Math.round(td.mx)+'° · Mín '+Math.round(td.mn)+'°</div>':'')+'</div>'+
+      '<div class="wgrid">'+wt('Viento',Math.round(c.wind_speed_10m)+' km/h',arrow(c.wind_direction_10m)+windDir(c.wind_direction_10m)+' · máx '+Math.round(c.wind_gusts_10m))+
+      wt('Humedad',Math.round(c.relative_humidity_2m)+' %','nubes '+Math.round(c.cloud_cover)+' %')+wt('Presión',Math.round(c.pressure_msl),'hPa')+
+      wt('Lluvia',(td?(td.p||0):0)+' %',fmt(c.precipitation,1)+' mm ahora')+wt('Índice UV',td&&td.uv!=null?fmt(td.uv,0):'–',uvTxt(td&&td.uv))+wt('Sol',li('sunrise')+rise,'se pone '+set)+'</div>';
+    $('hero').className='hero k-'+kd+(nt?' night':'');
+    var hk=kd+(nt?'n':'d');if($('hAnim')._k!==hk){$('hAnim')._k=hk;$('hAnim').innerHTML=genAnim(kd,nt,false);}}
   $('nowx').innerHTML=x;
   var f='';for(var i=1;i<=5;i++){var d=addD(day0(now),i),w=wxDay(d);if(!w)continue;
     f+='<div class="fcd"><div>'+ES_DS[d.getDay()]+'</div>'+wxIcon(w.c)+'<div class="mx num">'+Math.round(w.mx)+'°</div><div class="mn num">'+Math.round(w.mn)+'°</div><div class="pp">'+li('drop')+(w.p||0)+' %</div></div>';}
@@ -2024,8 +2102,8 @@ function addAlertPill(){
 function dayCol(d,opt){
   var now=new Date(),t0=day0(now),isT=+d===+t0,isP=d<t0,r=dayEvents(d),x='',i;
   var hn=S.hol[dkey(d)],wk=d.getDay()===0||d.getDay()===6;
-  x+='<div class="day'+(isT?' today':'')+(isP?' past':'')+(hn?' hol':wk?' wkend':'')+'"><div class="dh" data-newday="'+dkey(d)+'"><span class="n">'+(isT?'Hoy':ES_DS[d.getDay()])+'</span><span class="d num">'+d.getDate()+'<i class="plus">+</i></span></div>';
-  if(opt.wx){var w=wxDay(d);x+='<div class="dwx num">'+(w?wxIcon(w.c)+Math.round(w.mx)+'° '+Math.round(w.mn)+'°<span class="pp">'+li('drop')+(w.p||0)+'%</span>':'&nbsp;')+'</div>';}
+  x+='<div class="day'+(isT?' today':'')+(isP?' past':'')+(hn?' hol':wk?' wkend':'')+'"><div class="dh" data-newday="'+dkey(d)+'"><span class="n">'+(opt.full?ES_D[d.getDay()]+'<small>'+EN_D[d.getDay()]+'</small>':(isT?'Hoy':ES_DS[d.getDay()]))+'</span><span class="d num">'+d.getDate()+'<i class="plus">+</i></span></div>';
+  if(opt.wx){var w=wxDay(d);x+='<div class="dwx num" data-wxgo="'+dkey(d)+'">'+(w?wxIcon(w.c)+Math.round(w.mx)+'° '+Math.round(w.mn)+'°<span class="pp">'+li('drop')+(w.p||0)+'%</span>':'&nbsp;')+'</div>';}
   if(hn)x+='<span class="chip holchip">'+h(hn)+'</span>';
   for(i=0;i<r.chips.length;i++)x+='<span class="chip" data-ev="'+S.events.indexOf(r.chips[i])+'" style="'+chipStyle(r.chips[i].title)+'">'+h(r.chips[i].title)+'</span>';
   x+='<div class="sep"></div><div class="evs">';
@@ -2042,7 +2120,7 @@ function dayCol(d,opt){
 function homeCols(){var n=parseInt(D.settings&&D.settings.cols,10);return n>=1&&n<=8?n:8;}
 function selHtml(id,opts,val){var x='<select id="'+id+'">';for(var i=0;i<opts.length;i++)x+='<option value="'+h(opts[i][0])+'"'+(String(opts[i][0])===String(val)?' selected':'')+'>'+h(opts[i][1])+'</option>';return x+'</select>';}
 function renderWeek(){
-  var t=day0(new Date()),x='',nc=homeCols();for(var i=0;i<nc;i++)x+=dayCol(addD(t,i),{wx:true});$('week').innerHTML=x;$('week').className='week cols'+nc+(nc<=4?' few':'');
+  var t=day0(new Date()),x='',nc=homeCols();for(var i=0;i<nc;i++)x+=dayCol(addD(t,i),{wx:true,full:true});$('week').innerHTML=x;$('week').className='week cols'+nc+(nc<=4?' few':'');
   var m=weekStart(),a='',b='';for(var j=0;j<7;j++){a+=dayCol(addD(m,j),{wx:true});b+=dayCol(addD(m,j+7),{wx:true});}
   $('cw1').innerHTML=a;$('cw2').innerHTML=b;
 }
@@ -2479,6 +2557,7 @@ document.addEventListener('click',function(ev){
   if(t.id==='closeov'||(t.id==='ov'&&$('ov').className.indexOf('lock')<0)){$('ov').hidden=true;return;}
   if((el=attr(t,'data-ph'))){openPhoto(el.getAttribute('data-ph'));return;}
   if((el=attr(t,'data-alert'))){openAlert(S.alerts[+el.getAttribute('data-alert')]);return;}
+  if((el=attr(t,'data-wxgo'))){var wk=el.getAttribute('data-wxgo');S.wxSel=wk===dkey(new Date())?null:wk;markDirty();go('wx');return;}
   if((el=attr(t,'data-led'))){var lk=el.getAttribute('data-led');if(needPin())openPin(function(){openListEditor(lk);});else openListEditor(lk);return;}
   if((el=attr(t,'data-rt'))){var wasOk=el.className.indexOf(' ok')>=0;toggleRut(el.getAttribute('data-rt'));if(!wasOk){chime(0);var b2=document.querySelector('#tRut .rbar');if(b2)bump(b2);}return;}
   if((el=attr(t,'data-rk'))){S.rutSel=el.getAttribute('data-rk');renderRoutine();return;}
