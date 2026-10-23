@@ -1496,7 +1496,7 @@ var DEFAULT_API='https://script.google.com/macros/s/AKfycbwu-3K6qz2XTA3LjcWY2yli
 var API=(function(){
   var a=lsGet('cmf_api',null),q=location.search||'',mu=/[?&]api=([^&]+)/.exec(q),mk=/[?&]k=([^&]+)/.exec(q);
   /* enlace de un toque: …/?k=CLAVE (o …/?api=URL&k=CLAVE) */
-  if(mk){a={url:mu?decodeURIComponent(mu[1]):(a&&a.url||DEFAULT_API),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);lsSet('cmf_apimode','xhr');try{history.replaceState(null,'',location.pathname);}catch(e){}}
+  if(mk){a={url:mu?decodeURIComponent(mu[1]):(DEFAULT_API||a&&a.url),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);lsSet('cmf_apimode','xhr');try{history.replaceState(null,'',location.pathname);}catch(e){}}
   if(a&&!a.url&&DEFAULT_API)a.url=DEFAULT_API;
   return a&&a.url&&a.k?a:null;
 })();
