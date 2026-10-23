@@ -1499,8 +1499,8 @@ html.compact .week.cols4 .day{min-width:140px;-webkit-flex:0 0 140px;flex:0 0 14
 .saver .sv-phr,.saver .sub,.saver .sv-hint{color:var(--muted)}
 .saver .sv-phr{opacity:1}
 /* tarjeta del clima: el azul del encabezado de la app */
-#saver .sv-today.glass,html:not(.fx-full) #saver .sv-today.glass{background:-webkit-linear-gradient(left,var(--navy1),var(--navy2))!important;background:linear-gradient(90deg,var(--navy1),var(--navy2))!important;border:0!important;color:#fff}
-.saver .sv-today *{color:#fff}
+.sv-unused-navy{background:-webkit-linear-gradient(left,var(--navy1),var(--navy2))!important;background:linear-gradient(90deg,var(--navy1),var(--navy2))!important;border:0!important;color:#fff}
+
 .saver .sv-today .tdh{border-color:rgba(255,255,255,.2)}
 /* íconos y detalles */
 .saver .tic{background:var(--tile)!important;box-shadow:none!important}
@@ -1526,6 +1526,35 @@ html.compact .week.cols4 .day{min-width:140px;-webkit-flex:0 0 140px;flex:0 0 14
 .saver .fcd2 .mn,.saver .fcd2 .p{color:var(--muted)!important}
 .saver .fcd2.wk,.saver .fcd2.hol{border-radius:12px}
 .saver .fcd2.wk .d{color:var(--green)!important}.saver .fcd2.hol .d{color:var(--red)!important}
+
+/* ===== Encabezado de Inicio con la paleta de la app (sin bloque azul) ===== */
+.hero{background:var(--card)!important;color:var(--ink)!important;box-shadow:var(--shadow);border:1px solid var(--line);--wxbg:var(--card)}
+.hero .fc,#fc{display:none!important}
+.hero .wxtap{margin-left:auto}
+.hero .nowx{width:auto;min-width:130px;margin:0;padding:12px 18px;background:var(--tile);border-radius:18px;display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column;-webkit-align-items:center;align-items:center}
+.hero .nowx .wico svg{width:58px;height:58px}
+.hero .nowx .s .li,.hero .nowx .s svg{width:13px!important;height:13px!important;vertical-align:-1px;margin-right:2px}
+.hero .nowx .t{font-size:36px;font-weight:500;color:var(--ink)}
+.hero .nowx .s{font-size:14px;color:var(--muted);opacity:1}
+.hero .bigdate,.hero .bigdate b{color:var(--ink)}
+.greet .gph{color:var(--muted);opacity:1}
+.greet .gtip{background:var(--blueSoft);color:#1E6FD0}
+html.compact .hero .wxtap{width:auto;margin-top:0}
+html.compact .hero{-webkit-flex-wrap:nowrap;flex-wrap:nowrap}
+html.compact .hero .clockbox{width:auto;-webkit-flex:1;flex:1}
+html.compact .hero .nowx{min-width:96px;padding:10px 12px;-webkit-flex:none;flex:none}
+html.compact .hero .nowx .wico svg{width:44px;height:44px}
+html.compact .hero .nowx .t{font-size:28px}
+/* pronóstico bajo cada día del calendario, un poco más grande */
+.dwx{font-size:13px!important;overflow:hidden}
+.dwx>svg,.dwx .wico svg{width:24px!important;height:21px!important;-webkit-flex:none;flex:none;margin-right:3px!important}
+.dwx .pp svg,.dwx .pp .li{width:12px!important;height:12px!important}
+.dwx .pp{font-size:12px!important}
+.dwx .pp{-webkit-flex-shrink:1;flex-shrink:1;min-width:0;overflow:hidden}
+/* columnas angostas: sin gota, ícono algo menor, para que quepa el % de lluvia */
+.week.cols5 .dwx,.week.cols6 .dwx,.week.cols7 .dwx,.week.cols8 .dwx,#cw1 .dwx,#cw2 .dwx{font-size:12.5px!important}
+.week.cols5 .dwx .pp .li,.week.cols6 .dwx .pp .li,.week.cols7 .dwx .pp .li,.week.cols8 .dwx .pp .li,#cw1 .dwx .pp .li,#cw2 .dwx .pp .li{display:none}
+.week.cols6 .dwx>svg,.week.cols7 .dwx>svg,.week.cols8 .dwx>svg,#cw1 .dwx>svg,#cw2 .dwx>svg{width:21px!important;height:19px!important;margin-right:2px!important}
 </style>
 
 
