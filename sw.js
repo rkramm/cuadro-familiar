@@ -1,6 +1,6 @@
 /* Guarda el panel en el iPad: abre al instante y funciona aunque falle internet.
    Siempre intenta traer la versión nueva primero (red primero, memoria como respaldo). */
-var CACHE = 'cuadro-v3';
+var CACHE = 'cuadro-v4';
 var FILES = ['./', './index.html', './manifest.webmanifest', './icons/apple-touch-icon.png', './icons/icon-192.png'];
 self.addEventListener('install', function (e) { e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(FILES); })); self.skipWaiting(); });
 self.addEventListener('activate', function (e) {

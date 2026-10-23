@@ -6,7 +6,7 @@
 <title>Cuadro de mando familiar</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Casa">
 <meta name="theme-color" content="#F3E8D9">
 <meta name="robots" content="noindex">
@@ -1300,6 +1300,48 @@ html.compact .big{font-size:30px}
   html.compact.short .tgrid .it,html.compact.short .tgrid.c3 .it{width:calc(33.33% - 14px);height:100px}
   html.compact.short .cgrid .it,html.compact.short .cdgrid .it.cdcard{width:calc(50% - 14px)}
 }
+
+/* ================= TELÉFONO: barra de pestañas inferior ================= */
+html.dev-phone #app{-webkit-flex-direction:column;flex-direction:column}
+html.dev-phone main{-webkit-order:1;order:1;-webkit-flex:1;flex:1;min-height:0}
+html.dev-phone .side{-webkit-order:2;order:2;width:auto;-webkit-flex:0 0 auto;flex:0 0 auto;-webkit-flex-direction:row;flex-direction:row;-webkit-align-items:center;align-items:center;
+  padding:6px 4px;padding-bottom:calc(6px + env(safe-area-inset-bottom,0px));overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(80,60,30,.06)}
+html.dev-phone .nav{-webkit-flex:1 0 44px;flex:1 0 44px;width:44px;height:44px;margin:0 2px;border-radius:13px}
+html.dev-phone .nav svg{width:22px;height:22px}
+html.dev-phone .sideclock,html.dev-phone #refresh{display:none}
+/* el contenido empieza bajo la barra de estado y la muesca */
+html.dev-phone .screen{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:max(10px, env(safe-area-inset-left,0px));padding-right:max(10px, env(safe-area-inset-right,0px));padding-bottom:16px}
+html.dev-phone .demo{left:10px;right:10px;bottom:calc(70px + env(safe-area-inset-bottom,0px))}
+html.dev-phone .fab{bottom:14px}
+html.dev-phone .toast{bottom:calc(80px + env(safe-area-inset-bottom,0px))}
+html.dev-phone .saver .sv-top{padding-top:calc(24px + env(safe-area-inset-top,0px))}
+html.dev-phone .saver .sv-foot{padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+html.dev-phone .ov{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-bottom:calc(10px + env(safe-area-inset-bottom,0px))}
+/* en teléfono horizontal la barra queda a la izquierda, para no robar alto */
+@media (orientation:landscape){
+  html.dev-phone #app{-webkit-flex-direction:row;flex-direction:row}
+  html.dev-phone .side{-webkit-order:0;order:0;-webkit-flex-direction:column;flex-direction:column;width:58px;overflow-x:hidden;overflow-y:auto;
+    padding:calc(6px + env(safe-area-inset-top,0px)) 4px calc(6px + env(safe-area-inset-bottom,0px));padding-left:max(4px, env(safe-area-inset-left,0px));border-top:0;border-right:1px solid var(--line)}
+  html.dev-phone .nav{-webkit-flex:0 0 40px;flex:0 0 40px;height:40px;margin:2px 0}
+  html.dev-phone .screen{padding-top:10px}
+  html.dev-phone .demo{bottom:10px;left:70px}
+}
+/* la pantalla de descanso en teléfono ocupa todo, incluida la zona de la muesca */
+html.dev-phone .saver{position:fixed}
+html.compact .fcd .pp{white-space:nowrap}
+html.compact .fcd .pp .li{display:none}
+/* teléfono horizontal: reloj y clima en una sola fila compacta */
+html.compact.short .hero{-webkit-flex-wrap:nowrap;flex-wrap:nowrap;-webkit-align-items:center;align-items:center;padding:10px 14px}
+html.compact.short .clockbox{width:auto;-webkit-flex:0 0 auto;flex:0 0 auto;margin-right:14px}
+html.compact.short .bigtime{font-size:48px}
+html.compact.short .bigdate{font-size:15px}
+html.compact.short .wxtap{width:auto;-webkit-flex:1;flex:1;margin-top:0;min-width:0}
+html.compact.short .nowx svg{width:36px;height:36px}
+html.compact.short .nextc{min-height:120px}
+html.compact.short .bigdate{white-space:nowrap}
+html.compact.short .nowx .s:last-child .li{display:none}
+html.compact.short .nowx .s{white-space:nowrap}
 </style>
 
 
@@ -2000,6 +2042,7 @@ function renderSettings(){
       '<div class="fld" style="display:flex;align-items:flex-end"><button type="button" class="btn green" id="c_conn">Probar y conectar</button></div></div><div class="note" id="c_cmsg"></div></div>')+
     '<div class="fgrid"><div class="fld"><label for="c_child">Nombre de la niña</label><input id="c_child" value="'+h(child())+'" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_saver">Pantalla de descanso tras (minutos sin uso; 0 = nunca)</label><input id="c_saver" value="'+h(saverMinutes())+'" inputmode="numeric" autocomplete="off"></div>'+
+    '<div class="fld"><label for="c_dev">Tipo de pantalla (auto / teléfono / tablet) · detectado: '+({phone:'teléfono',tablet:'tablet',desktop:'computador'}[deviceType()])+'</label><input id="c_dev" value="'+({phone:'teléfono',tablet:'tablet'}[D.settings.device]||'auto')+'" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_lite">Efectos visuales (equilibrado / completo / liviano)</label><input id="c_lite" value="'+({full:'completo',lite:'liviano',balanced:'equilibrado'}[fxLevel()])+'" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_kwh">Tarifa de la luz (CLP por kWh)</label><input id="c_kwh" value="'+h(kwh())+'" inputmode="decimal" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_tasks">Tareas · una por línea: emoji nombre | estrellas</label><textarea id="c_tasks">'+h(tl.join('\n'))+'</textarea></div>'+
@@ -2038,6 +2081,7 @@ function saveSettings(){
   for(i=0;i<nr.length;i++)for(j=0;j<D.rewards.length;j++)if(D.rewards[j].n===nr[i].n)nr[i].id=D.rewards[j].id;
   var ph={},pl=$('c_ph').value.split('\n');for(i=0;i<pl.length;i++){var pp=pl[i].split('|');if(pp.length>1&&safeUrl(pp.slice(1).join('|'))){ph[pp[0].replace(/^\s+|\s+$/g,'').toLowerCase()]=pp.slice(1).join('|').replace(/^\s+|\s+$/g,'');}}
   D.settings.photos=ph;
+  var dv=$('c_dev').value.toLowerCase();D.settings.device=/tel|phone|iphone/.test(dv)?'phone':/tab|ipad/.test(dv)?'tablet':null;setTimeout(fitScreen,50);
   var lv=$('c_lite').value.toLowerCase();D.settings.fx=/livi/.test(lv)?'lite':/compl/.test(lv)?'full':'balanced';D.settings.lite=null;appKey='';setAppSky();
   var sm=parseInt($('c_saver').value,10);D.settings.saverMin=isNaN(sm)?5:Math.max(0,sm);
   function prl(id,k){var o=parseLines($(id).value,'x');for(var a=0;a<o.length;a++)for(var b=0;b<(D.routines[k]||[]).length;b++)if(D.routines[k][b].n===o[a].n)o[a].id=D.routines[k][b].id;return o;}
@@ -2496,6 +2540,7 @@ function setAppSky(){
   $('appAnim').innerHTML=fx==='full'?genAnim(calm,night,true):'';
 }
 
+function closestCls(el,cl){while(el&&el!==document){if(el.classList)for(var i=0;i<cl.length;i++)if(el.classList.contains(cl[i]))return el;el=el.parentNode;}return null;}
 /* ================== NUEVAS FUNCIONES ================== */
 LI.umbrella='<svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 18 0zM12 12v6.5a2 2 0 0 0 4 0M12 3v-.5"/></svg>';
 LI.sun='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>';
@@ -2700,7 +2745,7 @@ function reviewImport(r){
 /* ================= 9) DESLIZAR ENTRE PESTAÑAS ================= */
 (function(){
   var mn=document.querySelector('main'),x0=null,y0=0,t0=0,SW=['home','cal','wx','energy','tasks','kitchen','photos'];
-  mn.addEventListener('touchstart',function(e){var t=e.target;if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||attr(t,'data-noswipe')){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();},false);
+  mn.addEventListener('touchstart',function(e){var t=e.target;if(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||attr(t,'data-noswipe')||(document.documentElement.className.indexOf('compact')>=0&&closestCls(t,['week','calrow','fc','w48','fstrip','side']))){x0=null;return;}x0=e.touches[0].clientX;y0=e.touches[0].clientY;t0=Date.now();},false);
   mn.addEventListener('touchend',function(e){if(x0==null||!$('ov').hidden)return;var dx=e.changedTouches[0].clientX-x0,dy=e.changedTouches[0].clientY-y0;x0=null;
     if(Math.abs(dx)>90&&Math.abs(dy)<70&&Date.now()-t0<700){var i=SW.indexOf(S.view);if(i<0)return;var n=i+(dx<0?1:-1);if(n>=0&&n<SW.length)go(SW[n]);}},false);
 })();
@@ -2708,15 +2753,37 @@ function reviewImport(r){
 $('impin').onchange=function(){onImport(this);};
 
 /* ========= AJUSTE A LA PANTALLA: el diseño base es 1024×768 y se escala para llenar cualquier iPad ========= */
+/* ===== tipo de dispositivo: teléfono, tablet o computador =====
+   El iPad moderno se presenta como Mac, por eso se mira también si la pantalla es táctil. */
+function deviceType(){
+  var o=D.settings&&D.settings.device;if(o==='phone'||o==='tablet')return o;
+  var ua=navigator.userAgent||'',touch=(navigator.maxTouchPoints||0)>1||('ontouchstart' in window),
+      sw=Math.min(screen.width||0,screen.height||0);
+  if(/iPhone|iPod/.test(ua))return 'phone';
+  if(/iPad/.test(ua)||(/Macintosh/.test(ua)&&touch))return 'tablet';
+  if(/Android/.test(ua))return /Mobile/.test(ua)?'phone':'tablet';
+  if(touch&&sw&&sw<600)return 'phone';
+  if(touch)return 'tablet';
+  return 'desktop';
+}
+/* márgenes seguros (muesca, barra de inicio) medidos con un elemento de prueba */
+var insetProbe=null;
+function safeInsets(){
+  if(!insetProbe){insetProbe=document.createElement('div');insetProbe.style.cssText='position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);padding-left:env(safe-area-inset-left,0px);padding-right:env(safe-area-inset-right,0px)';document.body.appendChild(insetProbe);}
+  var cs=getComputedStyle(insetProbe);return {t:parseFloat(cs.paddingTop)||0,b:parseFloat(cs.paddingBottom)||0,l:parseFloat(cs.paddingLeft)||0,r:parseFloat(cs.paddingRight)||0};
+}
 function fitScreen(){
-  var b=$('stage'),w=window.innerWidth||document.documentElement.clientWidth,hh=window.innerHeight||document.documentElement.clientHeight;
+  var b=$('stage'),de=document.documentElement,dev=deviceType(),ins=safeInsets();
+  var W=window.innerWidth||de.clientWidth,H=window.innerHeight||de.clientHeight;
   function setT(t){b.style.webkitTransform=t;b.style.transform=t;}
-  var de=document.documentElement,compact=w<700||hh<560,port=hh>w;
-  de.className=de.className.replace(/\s?(portrait|compact|short)/g,'')+(compact?' compact':port?' portrait':'')+(hh<560?' short':'');
-  /* teléfonos y pantallas bajas: sin escalar, diseño apilado con desplazamiento */
-  if(compact){setT('');b.style.width='100%';b.style.height='100%';moveInd();if(S.view==='wx'&&S.wx)renderWx();return;}
+  var phone=dev==='phone';
+  /* en teléfono la barra inferior respeta los márgenes; en tablet se aplican al escenario */
+  var it=phone?0:ins.t,ib=phone?0:ins.b,il=ins.l,ir=ins.r;
+  var w=W-il-ir,hh=H-it-ib,port=hh>w,compact=phone||w<700||hh<560;
+  b.style.left=il+'px';b.style.top=it+'px';
+  de.className=de.className.replace(/\s?(portrait|compact|short|dev-phone|dev-tablet|dev-desktop)/g,'')+' dev-'+dev+(compact?' compact':port?' portrait':'')+(hh<560?' short':'');
+  if(compact){setT('');b.style.width=w+'px';b.style.height=hh+'px';moveInd();if(S.view==='wx'&&S.wx)renderWx();return;}
   var sc=port?Math.min(w/768,hh/1024):Math.min(w/1024,hh/768);if(Math.abs(sc-1)<0.02)sc=1;
-  /* escalar con transform (lo hace la tarjeta gráfica) en vez de zoom (obliga a recalcular todo) */
   b.style.width=(w/sc)+'px';b.style.height=(hh/sc)+'px';setT(sc===1?'':'scale('+sc+')');
   moveInd();
   if(S.view==='wx'&&S.wx)renderWx();
