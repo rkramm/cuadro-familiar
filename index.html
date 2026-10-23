@@ -1491,9 +1491,13 @@ function ymd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
 /* ========= CONEXIÓN CON GOOGLE APPS SCRIPT (si no existe = vista previa con ejemplos) ========= */
 var GAS=(typeof google!=='undefined'&&google.script&&google.script.run)?google.script.run:null;
 /* Conexión con Apps Script cuando el panel está en GitHub Pages: ?api=URL&k=CLAVE (se guarda en este iPad) */
+/* Dirección de Apps Script de la familia (no es secreta: sin la clave no entrega datos) */
+var DEFAULT_API='https://script.google.com/macros/s/AKfycbzKglARg9P4l5SFJg_og-Xy2TlP_OqeIeZtIs2mGjPaCAPJz-SAU1S-SuatLcVSlwWbpA/exec';
 var API=(function(){
   var a=lsGet('cmf_api',null),q=location.search||'',mu=/[?&]api=([^&]+)/.exec(q),mk=/[?&]k=([^&]+)/.exec(q);
-  if(mu&&mk){a={url:decodeURIComponent(mu[1]),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);try{history.replaceState(null,'',location.pathname);}catch(e){}}
+  /* enlace de un toque: …/?k=CLAVE (o …/?api=URL&k=CLAVE) */
+  if(mk){a={url:mu?decodeURIComponent(mu[1]):(a&&a.url||DEFAULT_API),k:decodeURIComponent(mk[1])};lsSet('cmf_api',a);lsSet('cmf_apimode','xhr');try{history.replaceState(null,'',location.pathname);}catch(e){}}
+  if(a&&!a.url&&DEFAULT_API)a.url=DEFAULT_API;
   return a&&a.url&&a.k?a:null;
 })();
 /* Conexión con Apps Script: primero POST normal; si Safari bloquea la respuesta,
@@ -2333,13 +2337,15 @@ function refreshAll(cb){
 }
 function showSetup(){
   $('ov').innerHTML='<form class="pop setup" id="setupf" role="dialog" aria-modal="true"><div class="cat" style="color:var(--green)"><i style="background:var(--green)"></i>Primera configuración</div>'+
-    '<h2>Conecta tu Google</h2><div class="desc">El panel muestra tu calendario, tareas y compras desde tu proyecto de Google Apps Script. Pega aquí la dirección de la aplicación web (termina en <b>/exec</b>) y la clave <b>KEY</b> que pusiste en Code.gs.</div>'+
-    '<label for="su_api">Dirección de Apps Script</label><input id="su_api" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off" spellcheck="false">'+
+    '<h2>Conecta tu Google</h2><div class="desc">Escribe la clave <b>KEY</b> que pusiste en Code.gs.</div>'+
+    '<div id="su_urlbox"'+(DEFAULT_API?' hidden':'')+'><label for="su_api">Dirección de Apps Script (termina en /exec)</label><input id="su_api" value="'+h(DEFAULT_API)+'" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off" spellcheck="false"></div>'+
     '<label for="su_key">Clave</label><input id="su_key" type="password" autocomplete="off" autocapitalize="off">'+
     '<div class="ferr" id="su_msg"></div><div class="act"><button type="submit" class="btn green" id="su_go">Conectar</button></div>'+
-    '<div class="note" style="margin-top:10px">La conexión se guarda solo en este dispositivo.</div></form>';
+    '<div class="note" style="margin-top:10px">La conexión se guarda solo en este dispositivo.'+(DEFAULT_API?' <a href="#" id="su_chg">Usar otra dirección</a>':'')+'</div></form>';
   $('ov').hidden=false;$('ov').className='ov lock';
-  $('setupf').onsubmit=function(ev){ev.preventDefault();
+  if($('su_chg'))$('su_chg').onclick=function(e){e.preventDefault();$('su_urlbox').hidden=false;this.style.display='none';};
+  setTimeout(function(){try{$('su_key').focus();}catch(e){}},300);
+  $('setupf').onsubmit=function(ev){ev.preventDefault();lsSet('cmf_apimode','xhr');API_MODE='xhr';
     var u=$('su_api').value.replace(/\s/g,''),k=$('su_key').value.replace(/^\s+|\s+$/g,''),m=$('su_msg');
     if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)){m.textContent='La dirección debe empezar con https://script.google.com/ y terminar en /exec.';return;}
     if(!k){m.textContent='Escribe la clave.';return;}

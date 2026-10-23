@@ -12,7 +12,7 @@ menú semanal, lista de compras, cuenta regresiva, foto del día y pantalla de d
 1. En Apps Script: define `KEY` en `Code.gs` e implementa como *Aplicación web*
    (Ejecutar como: Yo · Acceso: Cualquier persona).
 2. Abre una sola vez en el iPad:
-   `https://rkramm.github.io/cuadro-familiar/?api=URL_DE_APPS_SCRIPT&k=TU_CLAVE`
+   `https://rkramm.github.io/cuadro-familiar/?k=TU_CLAVE`
    La conexión queda guardada solo en ese iPad.
 3. *Compartir → Agregar a pantalla de inicio*.
 
