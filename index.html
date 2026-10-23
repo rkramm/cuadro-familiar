@@ -1627,6 +1627,18 @@ html.compact .hero .wt{width:calc(50% - 6px)}
 .portrait .hero .wt{width:calc(50% - 6px)}
 .portrait .hero .bigtime{font-size:68px}
 .portrait .hero .clockbox{max-width:36%}
+
+/* ===== Pantalla de descanso: transiciones rápidas y livianas (solo transform/opacidad, sin 3D ni desenfoque) ===== */
+.sl.out,.sl.out.back{-webkit-animation:slOutF .35s ease-in forwards!important;animation:slOutF .35s ease-in forwards!important}
+.sl.out.back{-webkit-animation-name:slOutFB!important;animation-name:slOutFB!important}
+@-webkit-keyframes slOutF{to{opacity:0;-webkit-transform:translateX(-40px)}}@keyframes slOutF{to{opacity:0;transform:translateX(-40px)}}
+@-webkit-keyframes slOutFB{to{opacity:0;-webkit-transform:translateX(40px)}}@keyframes slOutFB{to{opacity:0;transform:translateX(40px)}}
+.sl .it{-webkit-animation:itInF .45s cubic-bezier(.2,.8,.3,1) both!important;animation:itInF .45s cubic-bezier(.2,.8,.3,1) both!important}
+.sl.back .it{-webkit-animation-name:itInFB!important;animation-name:itInFB!important}
+@-webkit-keyframes itInF{from{opacity:0;-webkit-transform:translateX(36px)}to{opacity:1;-webkit-transform:none}}@keyframes itInF{from{opacity:0;transform:translateX(36px)}to{opacity:1;transform:none}}
+@-webkit-keyframes itInFB{from{opacity:0;-webkit-transform:translateX(-36px)}to{opacity:1;-webkit-transform:none}}@keyframes itInFB{from{opacity:0;transform:translateX(-36px)}to{opacity:1;transform:none}}
+.saver .glass{box-shadow:0 1px 2px rgba(80,60,30,.06),0 4px 12px rgba(80,60,30,.07)!important}
+html:not(.fx-full) .saver .wico,html:not(.fx-full) .saver .wico svg{-webkit-animation:none!important;animation:none!important}
 </style>
 
 
@@ -1867,7 +1879,7 @@ function tick(){
   $('bdes').innerHTML='<b>'+ES_D[n.getDay()]+'</b>'+n.getDate()+' de '+ES_M[n.getMonth()];
   $('bden').innerHTML='<b>'+EN_D[n.getDay()]+'</b>'+EN_M[n.getMonth()]+' '+n.getDate();
 }
-function flipDate(){dateLang=1-dateLang;$('bdes').className='ln'+(dateLang?'':' on');$('bden').className='ln'+(dateLang?' on':'');}
+function flipDate(){if(typeof SV!=='undefined'&&SV.on)return;dateLang=1-dateLang;$('bdes').className='ln'+(dateLang?'':' on');$('bden').className='ln'+(dateLang?' on':'');}
 
 /* ========= CLIMA ========= */
 function wxDay(d){
@@ -2785,7 +2797,7 @@ function nightHours(){var hr=new Date().getHours();return hr>=22||hr<7;}
 function pendShop(){return D.shop.filter(function(z){return !z.ok;});}
 function nextEvents(n){var now=new Date(),o=[];for(var i=0;i<S.events.length&&o.length<n;i++){var e=S.events[i];if(isMeal(e))continue;if(e.e>now)o.push(e);}return o;}
 function svSlides(){var k=[];if(!rutState(rutKind()).all&&rutState(rutKind()).total)k.push('rut');k.push('tasks');if(liveCountdowns().length)k.push('count');if(pendShop().length)k.push('shop');if(nextEvents(1).length)k.push('cal');return k;}
-function it(i,html,cls){return '<div class="it '+(cls||'')+'" style="-webkit-animation-delay:'+(120+i*90)+'ms;animation-delay:'+(120+i*90)+'ms">'+html+'</div>';}
+function it(i,html,cls){var dl=Math.min(60+i*40,380);return '<div class="it '+(cls||'')+'" style="-webkit-animation-delay:'+dl+'ms;animation-delay:'+dl+'ms">'+html+'</div>';}
 /* tamaño del mosaico según cuántos elementos hay */
 function gridFor(n){return n<=2?{c:2,h:180,f:30}:n<=4?{c:2,h:140,f:28}:n<=6?{c:3,h:140,f:24}:n<=9?{c:3,h:98,f:22}:{c:4,h:96,f:20};}
 function tileHtml(i,icon,title,sub,g,cls){return it(i,'<div class="tic">'+icon+'</div><div class="tn" style="font-size:'+g.f+'px">'+title+'</div><div class="ts">'+sub+'</div>','glass tile '+(cls||''));}
@@ -2836,7 +2848,7 @@ function svBuild(kind){
 function svGo(step){
   if(!SV.on||SV.night)return;
   SV.kinds=svSlides();SV.i=(SV.i+step+SV.kinds.length)%SV.kinds.length;var kind=SV.kinds[SV.i],st=$('svStage');
-  var olds=st.querySelectorAll('.sl');for(var j=0;j<olds.length;j++){(function(o){o.className='sl out'+(step<0?' back':'');setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},900);})(olds[j]);}
+  var olds=st.querySelectorAll('.sl');for(var j=0;j<olds.length;j++){(function(o){o.className='sl out'+(step<0?' back':'');setTimeout(function(){if(o.parentNode)o.parentNode.removeChild(o);},420);})(olds[j]);}
   var nd=document.createElement('div');nd.className='sl in s-'+kind+(step<0?' back':'');nd.innerHTML=svBuild(kind);st.appendChild(nd);
   var dots='',names={rut:'Rutina',tasks:'Tareas',count:'Cuenta',shop:'Compras',cal:'Citas'};
   for(var k=0;k<SV.kinds.length;k++)dots+='<span class="dot'+(k===SV.i?' on':'')+'"><b>'+names[SV.kinds[k]]+'</b><i style="-webkit-animation-duration:'+SV_SEC+'s;animation-duration:'+SV_SEC+'s"></i></span>';
