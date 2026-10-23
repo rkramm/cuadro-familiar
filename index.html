@@ -1489,6 +1489,43 @@ html.compact .week.cols4 .day{min-width:140px;-webkit-flex:0 0 140px;flex:0 0 14
 .chk input:checked{background:var(--green);border-color:var(--green)}
 .chk input:checked:after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;-webkit-transform:rotate(45deg);transform:rotate(45deg)}
 .week.cols1 .ev .x,.week.cols2 .ev .x,.week.cols3 .ev .x{font-size:16px}
+
+/* ===================== SIN LIQUID GLASS: todo con los colores de la app ===================== */
+*,*:before,*:after{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+.saver{background:var(--bg)!important;color:var(--ink)!important}
+.saver .sv-sky,.saver .sv-sheen,.saver .sv-veil,.saver:before,.saver .glass:before,.saver .glass:after{display:none!important}
+.saver .glass,.saver.bright .glass,html:not(.fx-full) .saver .glass,html:not(.fx-full) .saver.bright .glass{background:var(--card)!important;border:1px solid var(--line)!important;border-radius:22px!important;box-shadow:0 1px 2px rgba(80,60,30,.06),0 8px 22px rgba(80,60,30,.08)!important;color:var(--ink)}
+.saver .sv-time,.saver .sv-date,.saver .sv-phr,.saver h1{color:var(--ink);text-shadow:none!important}
+.saver .sv-phr,.saver .sub,.saver .sv-hint{color:var(--muted)}
+.saver .sv-phr{opacity:1}
+/* tarjeta del clima: el azul del encabezado de la app */
+#saver .sv-today.glass,html:not(.fx-full) #saver .sv-today.glass{background:-webkit-linear-gradient(left,var(--navy1),var(--navy2))!important;background:linear-gradient(90deg,var(--navy1),var(--navy2))!important;border:0!important;color:#fff}
+.saver .sv-today *{color:#fff}
+.saver .sv-today .tdh{border-color:rgba(255,255,255,.2)}
+/* íconos y detalles */
+.saver .tic{background:var(--tile)!important;box-shadow:none!important}
+.saver .tic.ok,.saver .done .tic{background:var(--greenSoft)!important;color:var(--green)}
+.saver .dot{background:var(--tile)!important;box-shadow:none!important;border:0!important;color:var(--ink)}
+.saver .dot.on{background:var(--card)!important;box-shadow:0 1px 3px rgba(80,60,30,.15)!important}
+.saver .dot i{background:var(--amberSoft)!important}
+.saver .dot b{position:relative;z-index:1;color:var(--ink)}
+.saver .dcard .rb{background:var(--line)}.saver .dcard .rb i{background:var(--green)}
+.saver .srow .ck{border-color:var(--muted)}
+.saver .crow .db.td b,.saver .crow .db.td span{color:var(--red)}
+.saver .sv-an{background:var(--tile)!important}
+.saver .nxt{background:var(--green);color:#fff}
+.saver .umb{background:var(--blueSoft);color:#1E6FD0}
+.saver .cdg>div{background:var(--tile)!important;box-shadow:none!important}
+.saver .fcd2.wk{background:var(--greenSoft)}.saver .fcd2.hol{background:var(--pink)}
+.saver .li.gold,.saver .sub .li{color:#E0A100}
+/* modo noche: mantiene los colores nocturnos de la app */
+.saver.nightmode{background:#14120F!important}
+.saver.nightmode .sv-time,.saver.nightmode .sv-date,.saver.nightmode .sv-nt,.saver.nightmode .sv-phr{color:#FFD9A8}
+.saver *{text-shadow:none!important}
+.saver .fcd2,.saver .fcd2 *{color:var(--ink)!important}
+.saver .fcd2 .mn,.saver .fcd2 .p{color:var(--muted)!important}
+.saver .fcd2.wk,.saver .fcd2.hol{border-radius:12px}
+.saver .fcd2.wk .d{color:var(--green)!important}.saver .fcd2.hol .d{color:var(--red)!important}
 </style>
 
 
@@ -2243,7 +2280,7 @@ function renderSettings(){
     '<div class="fld"><label for="c_saver">Pantalla de descanso tras (minutos sin uso; 0 = nunca)</label><input id="c_saver" value="'+h(saverMinutes())+'" inputmode="numeric" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_dev">Tipo de pantalla (auto / teléfono / tablet) · detectado: '+({phone:'teléfono',tablet:'tablet',desktop:'computador'}[deviceType()])+'</label>'+selHtml('c_dev',[['auto','Automático'],['phone','Teléfono'],['tablet','Tablet']],D.settings.device||'auto')+'</div>'+
     '<div class="fld"><label for="c_cols">Columnas del calendario en Inicio</label>'+selHtml('c_cols',[1,2,3,4,5,6,7,8].map(function(n){return [String(n),n===1?'1 día (solo hoy)':n+' días'];}),String(homeCols()))+'</div>'+
-    '<div class="fld"><label for="c_lite">Efectos visuales</label>'+selHtml('c_lite',[['balanced','Equilibrado (recomendado)'],['full','Completo (vidrio real, más consumo)'],['lite','Liviano (sin animaciones)']],fxLevel())+'</div>'+
+    '<div class="fld"><label for="c_lite">Efectos visuales</label>'+selHtml('c_lite',[['balanced','Equilibrado (recomendado)'],['full','Completo (más animaciones)'],['lite','Liviano (sin animaciones)']],fxLevel())+'</div>'+
     '<div class="fld"><label for="c_kwh">Tarifa de la luz (CLP por kWh)</label><input id="c_kwh" value="'+h(kwh())+'" inputmode="decimal" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_tasks">Tareas · una por línea: emoji nombre | estrellas</label><textarea id="c_tasks">'+h(tl.join('\n'))+'</textarea></div>'+
     '<div class="fld"><label for="c_rew">Recompensas · una por línea: emoji nombre | estrellas</label><textarea id="c_rew">'+h(rl.join('\n'))+'</textarea></div>'+
@@ -2704,7 +2741,7 @@ function svSky(){
   var c=S.wx&&S.wx.current,k=c?wxKind(c.weather_code):'cloud',night=c?c.is_day===0:nightHours(),quiet=SV.night||liteMode(),key=k+night+quiet;
   $('svSky').className='sv-sky k-'+k+(night?' night':'');
   $('saver').className='saver'+(SV.night?' nightmode':'')+((k==='sun'||k==='part'||k==='snow')&&!night?' bright':'')+(liteMode()?' lite':'')+(SV.rest&&!SV.night?' rest':'');
-  if(key!==SV.akey){SV.akey=key;$('svAnim').innerHTML=quiet?'':genAnim(k,night,true);}
+  if(key!==SV.akey){SV.akey=key;$('svAnim').innerHTML='';}
 }
 function svToday(){
   var c=S.wx&&S.wx.current,n=new Date(),td=wxDay(n);if(!c)return '';
