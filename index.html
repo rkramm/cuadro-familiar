@@ -1472,6 +1472,23 @@ html:not(.fx-full) .sv-sheen{-webkit-filter:none;filter:none;-webkit-animation:n
 .saver .wa-drop,.saver .wa-flake,.saver .wa-flash{-webkit-transition:opacity 1.6s ease;transition:opacity 1.6s ease}
 .saver.rest .wa-drop,.saver.rest .wa-flake,.saver.rest .wa-flash{opacity:0!important}
 html.saving .side *,html.saving main *,html.saving .app-sky *{-webkit-animation-play-state:paused!important;animation-play-state:paused!important}
+
+/* ===== Ajustes: listas desplegables y casillas ===== */
+.fld select{width:100%;box-sizing:border-box;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:12px;padding:9px 34px 9px 11px;font-size:15px;-webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238C8278' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;height:42px}
+.chk{display:-webkit-flex;display:flex;-webkit-align-items:center;align-items:center;cursor:pointer;min-height:42px;margin-top:22px}
+.chk input{width:24px;height:24px;margin:0 10px 0 0;-webkit-flex:none;flex:none;accent-color:var(--green)}
+.chk span{font-size:15px}
+/* ===== Columnas del calendario en Inicio ===== */
+.portrait #s-home .week.few{-webkit-flex-wrap:nowrap;flex-wrap:nowrap}
+.portrait #s-home .week.few .day{-webkit-flex:1 1 0;flex:1 1 0;height:auto;min-height:0;margin-bottom:0}
+html.compact .week.few .day{-webkit-flex:1 1 0;flex:1 1 0;min-width:0}
+html.compact .week.cols4 .day{min-width:140px;-webkit-flex:0 0 140px;flex:0 0 140px}
+.week.cols1 .ev .x,.week.cols2 .ev .x{font-size:17px}.week.cols1 .ev .t,.week.cols2 .ev .t{font-size:14px}
+.chk input{-webkit-appearance:none;appearance:none;border:2px solid var(--line);border-radius:7px;background:var(--card);position:relative;padding:0;box-sizing:border-box}
+.chk input:checked{background:var(--green);border-color:var(--green)}
+.chk input:checked:after{content:"";position:absolute;left:6px;top:2px;width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;-webkit-transform:rotate(45deg);transform:rotate(45deg)}
+.week.cols1 .ev .x,.week.cols2 .ev .x,.week.cols3 .ev .x{font-size:16px}
 </style>
 
 
@@ -1956,8 +1973,10 @@ function dayCol(d,opt){
   if(r.meals.length){var ms=[];for(i=0;i<r.meals.length;i++)ms.push(h(mealText(r.meals[i])));x+='<div class="meal" data-ev="'+S.events.indexOf(r.meals[0])+'">'+li('meal')+ms.join(' · ')+'</div>';}
   return x+'</div>';
 }
+function homeCols(){var n=parseInt(D.settings&&D.settings.cols,10);return n>=1&&n<=8?n:8;}
+function selHtml(id,opts,val){var x='<select id="'+id+'">';for(var i=0;i<opts.length;i++)x+='<option value="'+h(opts[i][0])+'"'+(String(opts[i][0])===String(val)?' selected':'')+'>'+h(opts[i][1])+'</option>';return x+'</select>';}
 function renderWeek(){
-  var t=day0(new Date()),x='';for(var i=0;i<8;i++)x+=dayCol(addD(t,i),{wx:true});$('week').innerHTML=x;
+  var t=day0(new Date()),x='',nc=homeCols();for(var i=0;i<nc;i++)x+=dayCol(addD(t,i),{wx:true});$('week').innerHTML=x;$('week').className='week cols'+nc+(nc<=4?' few':'');
   var m=weekStart(),a='',b='';for(var j=0;j<7;j++){a+=dayCol(addD(m,j),{wx:true});b+=dayCol(addD(m,j+7),{wx:true});}
   $('cw1').innerHTML=a;$('cw2').innerHTML=b;
 }
@@ -2222,8 +2241,9 @@ function renderSettings(){
       '<div class="fld" style="display:flex;align-items:flex-end"><button type="button" class="btn green" id="c_conn">Probar y conectar</button></div></div><div class="note" id="c_cmsg"></div></div>')+
     '<div class="fgrid"><div class="fld"><label for="c_child">Nombre de la niña</label><input id="c_child" value="'+h(child())+'" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_saver">Pantalla de descanso tras (minutos sin uso; 0 = nunca)</label><input id="c_saver" value="'+h(saverMinutes())+'" inputmode="numeric" autocomplete="off"></div>'+
-    '<div class="fld"><label for="c_dev">Tipo de pantalla (auto / teléfono / tablet) · detectado: '+({phone:'teléfono',tablet:'tablet',desktop:'computador'}[deviceType()])+'</label><input id="c_dev" value="'+({phone:'teléfono',tablet:'tablet'}[D.settings.device]||'auto')+'" autocomplete="off"></div>'+
-    '<div class="fld"><label for="c_lite">Efectos visuales (equilibrado / completo / liviano)</label><input id="c_lite" value="'+({full:'completo',lite:'liviano',balanced:'equilibrado'}[fxLevel()])+'" autocomplete="off"></div>'+
+    '<div class="fld"><label for="c_dev">Tipo de pantalla (auto / teléfono / tablet) · detectado: '+({phone:'teléfono',tablet:'tablet',desktop:'computador'}[deviceType()])+'</label>'+selHtml('c_dev',[['auto','Automático'],['phone','Teléfono'],['tablet','Tablet']],D.settings.device||'auto')+'</div>'+
+    '<div class="fld"><label for="c_cols">Columnas del calendario en Inicio</label>'+selHtml('c_cols',[1,2,3,4,5,6,7,8].map(function(n){return [String(n),n===1?'1 día (solo hoy)':n+' días'];}),String(homeCols()))+'</div>'+
+    '<div class="fld"><label for="c_lite">Efectos visuales</label>'+selHtml('c_lite',[['balanced','Equilibrado (recomendado)'],['full','Completo (vidrio real, más consumo)'],['lite','Liviano (sin animaciones)']],fxLevel())+'</div>'+
     '<div class="fld"><label for="c_kwh">Tarifa de la luz (CLP por kWh)</label><input id="c_kwh" value="'+h(kwh())+'" inputmode="decimal" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_tasks">Tareas · una por línea: emoji nombre | estrellas</label><textarea id="c_tasks">'+h(tl.join('\n'))+'</textarea></div>'+
     '<div class="fld"><label for="c_rew">Recompensas · una por línea: emoji nombre | estrellas</label><textarea id="c_rew">'+h(rl.join('\n'))+'</textarea></div>'+
@@ -2231,7 +2251,7 @@ function renderSettings(){
     '<div class="fld"><label for="c_rpm">Rutina de la noche · una por línea: emoji paso</label><textarea id="c_rpm">'+h(rlines('pm'))+'</textarea></div>'+
     '<div class="fld full"><label for="c_cd">Cuentas regresivas · una por línea: emoji nombre | AAAA-MM-DD HH:MM</label><textarea id="c_cd" style="min-height:80px">'+h(cdl)+'</textarea></div>'+
     '<div class="fld full"><label for="c_phr">Frases de ánimo · una por línea (se van rotando en la pantalla principal)</label><textarea id="c_phr" style="min-height:90px">'+h(phrases().join('\n'))+'</textarea></div>'+
-    '<div class="fld"><label for="c_snd">Sonido suave al completar (sí / no)</label><input id="c_snd" value="'+(soundOn()?'sí':'no')+'" autocomplete="off"></div>'+
+    '<div class="fld"><label class="chk"><input type="checkbox" id="c_snd"'+(soundOn()?' checked':'')+'><span>Sonido suave al completar tareas</span></label></div>'+
     '<div class="fld"><label for="c_pin">PIN para Ajustes (4 dígitos; vacío = sin PIN)</label><input id="c_pin" value="'+h(D.settings.pin||'')+'" inputmode="numeric" maxlength="6" autocomplete="off"></div>'+
     '<div class="fld"><label for="c_gem">Clave de Gemini para «Importar desde foto» ('+(S.gemini?'configurada ✓':'sin configurar')+')</label><input id="c_gem" type="password" placeholder="'+(S.gemini?'•••••••• (déjalo vacío para mantenerla)':'Pega aquí la clave de aistudio.google.com/apikey')+'" autocomplete="off"></div>'+
     '<div class="fld full"><label for="c_ph">Fotos propias para «Lo próximo» (opcional) · una por línea: palabra del evento | enlace https de la foto</label><textarea id="c_ph" style="min-height:80px" placeholder="ballet | https://…/foto.jpg">'+h(phl.join('\n'))+'</textarea></div></div>'+
@@ -2263,8 +2283,9 @@ function saveSettings(){
   for(i=0;i<nr.length;i++)for(j=0;j<D.rewards.length;j++)if(D.rewards[j].n===nr[i].n)nr[i].id=D.rewards[j].id;
   var ph={},pl=$('c_ph').value.split('\n');for(i=0;i<pl.length;i++){var pp=pl[i].split('|');if(pp.length>1&&safeUrl(pp.slice(1).join('|'))){ph[pp[0].replace(/^\s+|\s+$/g,'').toLowerCase()]=pp.slice(1).join('|').replace(/^\s+|\s+$/g,'');}}
   D.settings.photos=ph;
-  var dv=$('c_dev').value.toLowerCase();D.settings.device=/tel|phone|iphone/.test(dv)?'phone':/tab|ipad/.test(dv)?'tablet':null;setTimeout(fitScreen,50);
-  var lv=$('c_lite').value.toLowerCase();D.settings.fx=/livi/.test(lv)?'lite':/compl/.test(lv)?'full':'balanced';D.settings.lite=null;appKey='';setAppSky();
+  var dv=$('c_dev').value;D.settings.device=dv==='phone'||dv==='tablet'?dv:null;setTimeout(fitScreen,50);
+  D.settings.cols=parseInt($('c_cols').value,10)||8;renderWeek();
+  var lv=$('c_lite').value;D.settings.fx=lv==='lite'||lv==='full'?lv:'balanced';D.settings.lite=null;appKey='';setAppSky();
   var sm=parseInt($('c_saver').value,10);D.settings.saverMin=isNaN(sm)?5:Math.max(0,sm);
   function prl(id,k){var o=parseLines($(id).value,'x');for(var a=0;a<o.length;a++)for(var b=0;b<(D.routines[k]||[]).length;b++)if(D.routines[k][b].n===o[a].n)o[a].id=D.routines[k][b].id;return o;}
   D.routines={am:prl('c_ram','am'),pm:prl('c_rpm','pm')};
@@ -2272,7 +2293,7 @@ function saveSettings(){
     cds.push({id:uid(),e:em2,n:nm2,d:dkey(dtt)+'T'+pad(dtt.getHours())+':'+pad(dtt.getMinutes())});}
   D.countdowns=cds;
   var phr=$('c_phr').value.split('\n').map(function(z){return z.replace(/^\s+|\s+$/g,'');}).filter(function(z){return z;});D.settings.phrases=phr.length?phr:null;
-  D.settings.sound=!/^\s*n/i.test($('c_snd').value);renderGreet();
+  D.settings.sound=!!$('c_snd').checked;renderGreet();
   var pv=$('c_pin').value.replace(/\D/g,'');D.settings.pin=pv.length>=4?pv:'';S.pinOk=Date.now();
   var gk=$('c_gem').value.replace(/^\s+|\s+$/g,'');if(gk&&!S.demo)call('setGeminiKey',[gk],function(ok){S.gemini=ok;showToast(ok?'Clave de Gemini guardada':'No se guardó la clave');});
   D.tasks=nt;D.rewards=nr;saveD();renderHomeCards();renderNext();renderCountdown();
