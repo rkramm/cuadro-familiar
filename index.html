@@ -1342,6 +1342,37 @@ html.compact.short .nextc{min-height:120px}
 html.compact.short .bigdate{white-space:nowrap}
 html.compact.short .nowx .s:last-child .li{display:none}
 html.compact.short .nowx .s{white-space:nowrap}
+
+/* ===== botones de Foto del día: se acomodan al ancho ===== */
+.pact{-webkit-flex-wrap:wrap;flex-wrap:wrap}
+.pact .btn{margin:0 8px 8px 0!important;white-space:nowrap}
+html.compact .pact .btn,.portrait .pact .btn{-webkit-flex:1 1 220px;flex:1 1 220px;text-align:center;margin-right:0!important}
+html.compact .pact,.portrait .pact{display:block}
+html.compact .pact .btn,.portrait .pact .btn{display:block;width:100%;box-sizing:border-box;margin:0 0 8px!important}
+.portrait .pcol{-webkit-flex:1.6;flex:1.6}
+/* ===== gráfico del clima: se dibuja al ancho real ===== */
+.w48 .chart,.w48 svg{max-width:100%}
+html.compact .w48{overflow:visible}
+html.compact .w48 svg{min-width:0}
+.portrait .w48 .hint{display:none}
+/* ===== pantalla de descanso: el contenido se desplaza en su propia capa, el cielo queda fijo ===== */
+.sv-body{position:absolute;top:0;left:0;right:0;bottom:0}
+html.compact .saver{overflow:hidden}
+html.compact .sv-sky,html.compact .sv-veil,html.compact .sv-sheen{position:absolute}
+html.compact .sv-body{overflow-y:auto;-webkit-overflow-scrolling:touch}
+.portrait .saver:not(.nightmode){display:block}
+.portrait .saver:not(.nightmode) .sv-body{display:-webkit-flex;display:flex;-webkit-flex-direction:column;flex-direction:column}
+html.compact .saver.nightmode .sv-top{position:absolute}
+/* ===== avisos ===== */
+.demo.err{background:#C42A3F;color:#fff;max-width:90%}
+.setup{max-width:520px}
+.setup label{display:block;font-size:13px;font-weight:650;color:var(--muted);margin:12px 0 4px}
+.setup input{width:100%;box-sizing:border-box;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:11px 12px;font-size:16px;-webkit-appearance:none}
+.setup .desc{font-size:15px;max-height:none}
+.portrait #s-wx .wxs{height:auto;min-height:100%}
+.portrait #s-wx .w48{-webkit-flex:0 0 auto;flex:0 0 auto}
+html.compact .wd{width:calc(33.33% - 8px)}
+html.compact .wd .r,html.compact .wd .wi{white-space:normal;font-size:11px}
 </style>
 
 
@@ -1427,9 +1458,9 @@ html.compact.short .nowx .s{white-space:nowrap}
 <div class="confetti" id="confetti" hidden></div>
 <div class="toast" id="toast" role="status"></div>
 <div class="saver" id="saver" hidden><div class="sv-sky" id="svSky"><div class="wanim" id="svAnim"></div></div><div class="sv-sheen s1"></div><div class="sv-sheen s2"></div><div class="sv-sheen s3"></div><div class="sv-veil"></div>
-  <div class="sv-top"><div class="sv-clock"><div class="sv-time num" id="svTime"></div><div class="sv-date" id="svDate"></div><div class="sv-nt" id="svNightT"></div></div><div class="glass sv-today" id="svToday"></div></div>
+  <div class="sv-body" id="svBody"><div class="sv-top"><div class="sv-clock"><div class="sv-time num" id="svTime"></div><div class="sv-date" id="svDate"></div><div class="sv-nt" id="svNightT"></div></div><div class="glass sv-today" id="svToday"></div></div>
   <div class="sv-stage" id="svStage"></div>
-  <div class="sv-foot"><div class="sv-dots" id="svDots"></div><div class="sv-hint">Toca para volver · desliza para cambiar</div></div></div>
+  <div class="sv-foot"><div class="sv-dots" id="svDots"></div><div class="sv-hint">Toca para volver · desliza para cambiar</div></div></div></div>
 <button class="demo" id="demo" data-go="settings" hidden></button>
 </div>
 <script>
@@ -1482,6 +1513,7 @@ function call(fn,args,ok,fail){
   r[fn].apply(r,args||[]);
 }
 
+var NEEDSETUP=!GAS&&!API&&/github\.io$/.test(location.hostname);
 var S={wx:null,events:[],dryer:null,view:'home',etab:'24',errors:{},demo:!GAS&&!API,hol:lsGet('cmf_hol',{}),alerts:[],wxSel:null};
 var ORDER=['home','cal','wx','energy','tasks','kitchen','photos','settings'];
 
@@ -1942,18 +1974,21 @@ function chartWx(){
   if(S.wxSel){i0=H.time.indexOf(S.wxSel+'T00:00');n=24;step=2;}else{i0=hourIdx();n=48;step=3;}
   if(i0<0)return '<p class="note">Sin datos por hora para ese día.</p>';
   n=Math.min(n,H.time.length-i0);
-  var W=900,Ht=document.documentElement.className.indexOf('portrait')>=0?330:232,pl=12,pr=12,pt=30,pb=26,ph=Ht-pt-pb,cw=(W-pl-pr)/n,T=[],PP=[],tmin=99,tmax=-99,k;
+  var box=$('w48'),cwid=box&&box.clientWidth?box.clientWidth-34:900,W=Math.max(300,Math.round(cwid)),narrow=W<560;
+  /* deja al menos ~50 px entre etiquetas de hora para que nunca se encimen */
+  var minPx=narrow?42:58,opts=[1,2,3,4,6,8,12];for(var oi=0;oi<opts.length;oi++){if(opts[oi]>=step&&W*opts[oi]/n>=minPx){step=opts[oi];break;}}
+  var Ht=narrow?220:document.documentElement.className.indexOf('portrait')>=0?300:232,pl=12,pr=12,pt=30,pb=26,ph=Ht-pt-pb,cw=(W-pl-pr)/n,T=[],PP=[],tmin=99,tmax=-99,k;
   for(k=0;k<n;k++){T.push(H.temperature_2m[i0+k]);PP.push(H.precipitation_probability?(H.precipitation_probability[i0+k]||0):0);tmin=Math.min(tmin,T[k]);tmax=Math.max(tmax,T[k]);}
   tmin=Math.floor(tmin)-1;tmax=Math.ceil(tmax)+1;
   var yT=function(v){return pt+8+(ph*0.55)*(tmax-v)/(tmax-tmin);},xc=function(k){return pl+k*cw+cw/2;};
-  var x='<svg viewBox="0 0 '+W+' '+Ht+'">';
+  var x='<svg viewBox="0 0 '+W+' '+Ht+'" width="'+W+'" height="'+Ht+'" style="width:100%;height:auto">';
   /* nombre del día de fondo (Hoy, Mañana…) */
   var segS=0;
   for(k=1;k<=n;k++){
     var kd=k<n?H.time[i0+k].slice(0,10):null,sd=H.time[i0+segS].slice(0,10);
     if(kd!==sd){var w=(k-segS)*cw,cx=pl+segS*cw+w/2;
       if(segS>0)x+='<line x1="'+(pl+segS*cw).toFixed(1)+'" x2="'+(pl+segS*cw).toFixed(1)+'" y1="'+(pt-14)+'" y2="'+(Ht-pb)+'" stroke="var(--muted)" stroke-opacity=".35" stroke-width="1.5" stroke-dasharray="5 5"/>';
-      var lb=relName(sd);if(w>110&&lb!=='Pasado mañana')x+='<text x="'+cx.toFixed(1)+'" y="'+(pt+ph*0.62).toFixed(1)+'" text-anchor="middle" font-size="'+(w>300?54:34)+'" font-weight="800" fill="var(--ink)" fill-opacity=".13" letter-spacing="1">'+h(lb)+'</text>';
+      var lb=relName(sd);if(w>90&&lb!=='Pasado mañana')x+='<text x="'+cx.toFixed(1)+'" y="'+(pt+ph*0.62).toFixed(1)+'" text-anchor="middle" font-size="'+(w>300?54:w>160?34:24)+'" font-weight="800" fill="var(--ink)" fill-opacity=".13" letter-spacing="1">'+h(lb)+'</text>';
       segS=k;}}
   /* barras: probabilidad de lluvia */
   for(k=0;k<n;k++){if(PP[k]<=0)continue;var bh=ph*0.42*PP[k]/100;
@@ -1965,7 +2000,7 @@ function chartWx(){
   for(k=0;k<n;k++){var hr=+H.time[i0+k].slice(11,13);if(hr%step!==0)continue;var px=xc(k),py=yT(T[k]);
     x+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="4.5" fill="#E3632F" stroke="var(--card)" stroke-width="2"/>'+
       '<text x="'+px.toFixed(1)+'" y="'+(py-11).toFixed(1)+'" text-anchor="middle" font-size="16" font-weight="700" fill="var(--ink)">'+Math.round(T[k])+'°</text>'+
-      '<text x="'+px.toFixed(1)+'" y="'+(Ht-6)+'" text-anchor="middle" font-size="14" font-weight="600" fill="var(--muted)">'+pad(hr)+':00</text>';
+      '<text x="'+px.toFixed(1)+'" y="'+(Ht-6)+'" text-anchor="middle" font-size="'+(narrow?12:14)+'" font-weight="600" fill="var(--muted)">'+pad(hr)+(narrow?'h':':00')+'</text>';
     if(PP[k]>=10)x+='<text x="'+px.toFixed(1)+'" y="'+(Ht-pb-ph*0.42*PP[k]/100-5).toFixed(1)+'" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A7DC2">'+PP[k]+'%</text>';}
   return x+'</svg>';
 }
@@ -2205,7 +2240,7 @@ function go(v,quiet){
 function attr(el,a){while(el&&el!==document){if(el.getAttribute&&el.getAttribute(a)!=null)return el;el=el.parentNode;}return null;}
 document.addEventListener('click',function(ev){
   var t=ev.target,el;
-  if(t.id==='closeov'||t.id==='ov'){$('ov').hidden=true;return;}
+  if(t.id==='closeov'||(t.id==='ov'&&$('ov').className.indexOf('lock')<0)){$('ov').hidden=true;return;}
   if((el=attr(t,'data-ph'))){openPhoto(el.getAttribute('data-ph'));return;}
   if((el=attr(t,'data-alert'))){openAlert(S.alerts[+el.getAttribute('data-alert')]);return;}
   if((el=attr(t,'data-rt'))){toggleRut(el.getAttribute('data-rt'));return;}
@@ -2250,17 +2285,38 @@ function renderAll(){
   markDirty();
   renderHero();renderNext();renderWeek();renderHomeCards();renderLuzHome();renderCountdown();
   if(S.view==='tasks'){renderTasks();renderRoutine();}if(S.view==='kitchen'){renderTasks();renderMenu();}if(S.view==='cal'&&S.calMode==='month')renderMonth();if(S.view==='energy')renderEnergy();if(S.view==='wx')renderWx();
-  $('demo').hidden=!S.demo;$('demo').textContent=GAS?'Vista previa con datos de ejemplo':'Vista previa · toca para conectar con Google';
+  var errA=S.errors&&S.errors.all;
+  $('demo').hidden=!(S.demo&&!NEEDSETUP)&&!errA;$('demo').className='demo'+(errA?' err':'');
+  $('demo').textContent=errA?'Sin conexión con Google: '+errA+' · toca para revisar':(GAS?'Vista previa con datos de ejemplo':'Vista previa · toca para conectar con Google');
 }
 
 /* ========= CARGA DE DATOS ========= */
 function refreshAll(cb){
+  if(NEEDSETUP){renderAll();showSetup();cb&&cb();return;}
   if(S.demo){S.events=demoEvents();S.wx=demoWx();S.dryer=demoDryer();S.hol=demoHol();S.alerts=demoAlerts();renderAll();cb&&cb();return;}
   var m=weekStart();
   call('getAll',[m.getTime(),addD(m,14).getTime()],function(r){
     applyAll(r);try{localStorage.setItem('cmf_all',JSON.stringify({events:r.events,alerts:r.alerts,gemini:r.gemini,dryer:r.dryer,photos:r.photos,t:Date.now()}));}catch(e){}
     renderAll();cb&&cb();
   },function(e){S.errors.all=e;renderAll();cb&&cb();});
+}
+function showSetup(){
+  $('ov').innerHTML='<form class="pop setup" id="setupf" role="dialog" aria-modal="true"><div class="cat" style="color:var(--green)"><i style="background:var(--green)"></i>Primera configuración</div>'+
+    '<h2>Conecta tu Google</h2><div class="desc">El panel muestra tu calendario, tareas y compras desde tu proyecto de Google Apps Script. Pega aquí la dirección de la aplicación web (termina en <b>/exec</b>) y la clave <b>KEY</b> que pusiste en Code.gs.</div>'+
+    '<label for="su_api">Dirección de Apps Script</label><input id="su_api" placeholder="https://script.google.com/macros/s/…/exec" autocomplete="off" autocapitalize="off" spellcheck="false">'+
+    '<label for="su_key">Clave</label><input id="su_key" type="password" autocomplete="off" autocapitalize="off">'+
+    '<div class="ferr" id="su_msg"></div><div class="act"><button type="submit" class="btn green" id="su_go">Conectar</button></div>'+
+    '<div class="note" style="margin-top:10px">La conexión se guarda solo en este dispositivo.</div></form>';
+  $('ov').hidden=false;$('ov').className='ov lock';
+  $('setupf').onsubmit=function(ev){ev.preventDefault();
+    var u=$('su_api').value.replace(/\s/g,''),k=$('su_key').value.replace(/^\s+|\s+$/g,''),m=$('su_msg');
+    if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(u)){m.textContent='La dirección debe empezar con https://script.google.com/ y terminar en /exec.';return;}
+    if(!k){m.textContent='Escribe la clave.';return;}
+    m.textContent='Conectando…';$('su_go').disabled=true;
+    apiCall('ping',[],function(r){lsSet('cmf_api',{url:u,k:k});m.style.color='var(--green)';m.textContent='✓ Conectado al calendario «'+(r&&r.calendar||'')+'». Cargando…';setTimeout(function(){location.reload();},800);},
+      function(err){$('su_go').disabled=false;m.textContent='No se pudo conectar: '+err+'. Revisa que hayas implementado una versión nueva de Code.gs con acceso «Cualquier persona».';},u,k);};
+}
+function noop_(){
 }
 function applyAll(r){
     S.errors=r.errors||{};
@@ -2329,7 +2385,7 @@ function renderPhotos(){
   var tp=todayPhoto(),x='';
   x+='<div class="chead"><span class="ico" style="background:var(--pink);color:var(--pinkInk)">'+LI.camera+'</span><h3>Foto del día · '+h(niceDay(dkey(new Date())))+'</h3></div>';
   if(tp){x+='<div class="ptoday"><div class="pimg" id="pBig"><span class="note">Cargando foto…</span></div></div>';}
-  else{x+='<div class="pempty"><div class="pcam">'+LI.camera+'</div><b>Todavía no hay foto de hoy</b><span>Ponte frente al iPad y sonríe 😊</span></div>';}
+  else{x+='<div class="pempty"><div class="pcam">'+LI.camera+'</div><b>Todavía no hay foto de hoy</b><span>Ponte frente a la cámara y sonríe 😊</span></div>';}
   x+='<div class="pact"><label class="btn green pbtn" for="camin">'+(tp?li('refresh')+'Repetir la foto de hoy':li('camera')+'Tomar la foto de hoy')+'</label>'+
      '<button class="btn out" id="saverNow" style="margin-left:8px">'+li('play')+'Pantalla de descanso</button></div>'+
      '<div class="note pmsg" id="pMsg">'+h(PH.msg||'Se guarda en tu Google Drive, carpeta «Cuadro de mando · Fotos».')+'</div>';
