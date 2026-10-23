@@ -1492,7 +1492,7 @@ function ymd(s){var p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);}
 var GAS=(typeof google!=='undefined'&&google.script&&google.script.run)?google.script.run:null;
 /* Conexión con Apps Script cuando el panel está en GitHub Pages: ?api=URL&k=CLAVE (se guarda en este iPad) */
 /* Dirección de Apps Script de la familia (no es secreta: sin la clave no entrega datos) */
-var DEFAULT_API='https://script.google.com/macros/s/AKfycbzKglARg9P4l5SFJg_og-Xy2TlP_OqeIeZtIs2mGjPaCAPJz-SAU1S-SuatLcVSlwWbpA/exec';
+var DEFAULT_API='https://script.google.com/macros/s/AKfycbwu-3K6qz2XTA3LjcWY2yli-C-4UDt_wteP4liQNepkkHkTySOfn9NvBMop2XhAxL0-XQ/exec';
 var API=(function(){
   var a=lsGet('cmf_api',null),q=location.search||'',mu=/[?&]api=([^&]+)/.exec(q),mk=/[?&]k=([^&]+)/.exec(q);
   /* enlace de un toque: …/?k=CLAVE (o …/?api=URL&k=CLAVE) */
