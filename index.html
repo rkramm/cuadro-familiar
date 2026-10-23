@@ -1453,6 +1453,25 @@ html.dev-phone .pop.leed,html.compact .pop.leed{padding-left:16px;padding-right:
 .saver.nightmode .sv-phr{font-size:22px;opacity:.55;color:#FFD9A8;margin-top:14px}
 html.compact .sv-phr{font-size:17px;margin-top:6px}
 html.compact.short .sv-phr{display:none}
+
+/* ===== Pantalla de descanso en modo ahorro (evita que la tablet se caliente) ===== */
+/* barra de progreso: transform en vez de width (sin recalcular el diseño en cada cuadro) */
+.dot i{width:100%;-webkit-transform-origin:0 50%;transform-origin:0 50%;-webkit-transform:scaleX(0);transform:scaleX(0)}
+.dot.on i{-webkit-animation-name:progS;animation-name:progS}
+@-webkit-keyframes progS{to{-webkit-transform:scaleX(1)}}@keyframes progS{to{transform:scaleX(1)}}
+/* el panel de atrás deja de dibujarse mientras está la pantalla de descanso */
+html.saving .side,html.saving main{visibility:hidden}
+/* vidrio sin desenfoque en vivo (salvo efectos «completo») */
+html:not(.fx-full) .saver *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
+html:not(.fx-full) .saver .glass{background:-webkit-linear-gradient(300deg,rgba(60,80,150,.36) 0%,rgba(25,40,95,.24) 50%,rgba(50,70,140,.30) 100%);background:linear-gradient(150deg,rgba(60,80,150,.36) 0%,rgba(25,40,95,.24) 50%,rgba(50,70,140,.30) 100%)}
+html:not(.fx-full) .saver.bright .glass{background:-webkit-linear-gradient(300deg,rgba(15,35,90,.34),rgba(10,30,80,.22));background:linear-gradient(150deg,rgba(15,35,90,.34),rgba(10,30,80,.22))}
+html:not(.fx-full) .saver .dot{background:rgba(255,255,255,.16)}
+html:not(.fx-full) .sv-sheen{-webkit-filter:none;filter:none;-webkit-animation:none!important;animation:none!important}
+/* reposo: el cielo se detiene y la lluvia/nieve se desvanece hasta el próximo cambio */
+.saver.rest .wanim *,.saver.rest .wico,.saver.rest .wico svg{-webkit-animation-play-state:paused!important;animation-play-state:paused!important}
+.saver .wa-drop,.saver .wa-flake,.saver .wa-flash{-webkit-transition:opacity 1.6s ease;transition:opacity 1.6s ease}
+.saver.rest .wa-drop,.saver.rest .wa-flake,.saver.rest .wa-flash{opacity:0!important}
+html.saving .side *,html.saving main *,html.saving .app-sky *{-webkit-animation-play-state:paused!important;animation-play-state:paused!important}
 </style>
 
 
@@ -2657,11 +2676,13 @@ function svGo(step){
   for(var k=0;k<SV.kinds.length;k++)dots+='<span class="dot'+(k===SV.i?' on':'')+'"><b>'+names[SV.kinds[k]]+'</b><i style="-webkit-animation-duration:'+SV_SEC+'s;animation-duration:'+SV_SEC+'s"></i></span>';
   $('svDots').innerHTML=dots;
   clearInterval(SV.rot);SV.rot=setInterval(function(){svGo(1);},SV_SEC*1000);
+  /* ahorro: el cielo se anima unos segundos tras cada cambio y luego reposa */
+  SV.rest=false;clearTimeout(SV.rt);svSky();if(fxLevel()!=='full')SV.rt=setTimeout(function(){SV.rest=true;svSky();},9000);
 }
 function svSky(){
   var c=S.wx&&S.wx.current,k=c?wxKind(c.weather_code):'cloud',night=c?c.is_day===0:nightHours(),quiet=SV.night||liteMode(),key=k+night+quiet;
   $('svSky').className='sv-sky k-'+k+(night?' night':'');
-  $('saver').className='saver'+(SV.night?' nightmode':'')+((k==='sun'||k==='part'||k==='snow')&&!night?' bright':'')+(liteMode()?' lite':'');
+  $('saver').className='saver'+(SV.night?' nightmode':'')+((k==='sun'||k==='part'||k==='snow')&&!night?' bright':'')+(liteMode()?' lite':'')+(SV.rest&&!SV.night?' rest':'');
   if(key!==SV.akey){SV.akey=key;$('svAnim').innerHTML=quiet?'':genAnim(k,night,true);}
 }
 function svToday(){
@@ -2673,10 +2694,10 @@ function svToday(){
     (hrs?'<div class="tdh">'+hrs+'</div>':'');
 }
 function showSaver(){
-  if(SV.on)return;SV.on=true;$('saver').hidden=false;SV.i=-1;SV.night=null;
+  if(SV.on)return;SV.on=true;$('saver').hidden=false;document.documentElement.className+=' saving';SV.i=-1;SV.night=null;
   updSaver(true);
 }
-function hideSaver(){if(!SV.on)return;SV.on=false;$('saver').hidden=true;clearInterval(SV.rot);$('svStage').innerHTML='';resetIdle();}
+function hideSaver(){if(!SV.on)return;SV.on=false;clearTimeout(SV.rt);SV.rest=false;document.documentElement.className=document.documentElement.className.replace(/\s?saving/g,'');$('saver').hidden=true;clearInterval(SV.rot);$('svStage').innerHTML='';resetIdle();}
 function updSaver(force){
   if(!SV.on)return;var n=new Date(),nm=nightHours();
   $('svTime').textContent=pad(n.getHours())+':'+pad(n.getMinutes());
